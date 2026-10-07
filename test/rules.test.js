@@ -22,9 +22,9 @@ test('rules: scoring adds up to 100 and tiers match the spec', () => {
   });
 });
 
-test('rules: demo aliases map to the 6 spec domains, plus the HubSpot-linked subsidiary', () => {
+test('rules: demo aliases map to the 6 spec domains, plus the ones added for the demo', () => {
   assert.deepEqual(Object.values(rules.demo_aliases), [
-    'temporal.io', 'launchdarkly.com', 'acme-test.com', 'globex-test.com', 'initech-test.com', 'slack.com', 'acme-labs-test.com',
+    'temporal.io', 'launchdarkly.com', 'acme-test.com', 'globex-test.com', 'initech-test.com', 'slack.com', 'acme-labs-test.com', 'newrelic.com',
   ]);
 });
 
