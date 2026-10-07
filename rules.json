@@ -572,7 +572,7 @@
     "team_reply_to": "jainutsav67@gmail.com",
     "footer": "Concept demo by Utsav, built on public data. Not affiliated with Zenskar.",
     "productTourUrl": "https://www.zenskar.com/product-tour",
-    "bcc_ae_on": ["tier_a_confirm", "tier_b_confirm", "tier_b_release"],
+    "bcc_ae_on": ["tier_a_confirm", "ae_intro", "tier_b_confirm", "tier_b_release"],
     "signal_labels": {
       "funding": "funding round",
       "m_and_a": "acquisition",
@@ -605,6 +605,20 @@
           "{sender_name}"
         ]
       },
+      "ae_intro": {
+        "from": "ae",
+        "approved_by": "Utsav",
+        "approved_at": "2026-10-08",
+        "subject": "Introducing myself before our {brand} demo",
+        "body": [
+          "Hi {first_name},",
+          "I'm {sender_name}, and I'll be running your demo on {meeting_time}. I wanted to introduce myself before we meet.",
+          "Here is what we'll do on the call:\n1. Start with how you bill today{pricing_clause}.\n2. A live walkthrough of {brand} built around that, not a generic tour.\n3. Your questions, and what a sensible next step would look like.",
+          "If you'd like a look beforehand, here is a short product tour: {tour_url}",
+          "If there is one thing you want to make sure we cover, reply to this email and I'll build the demo around it.",
+          "{sender_name}"
+        ]
+      },
       "tier_b_confirm": {
         "from": "ae",
         "approved_by": "Utsav",
@@ -627,9 +641,11 @@
         "subject": "About your demo request",
         "body": [
           "Hi {first_name},",
-          "Thank you for your interest. We've released the time we were holding for a demo, so there is nothing on your calendar from us.",
-          "You can see the product at your own pace here: {tour_url}",
+          "Thank you for your interest, and for the time you've given us so far.",
+          "We've released the slot we were holding for a demo, so there is nothing on your calendar from us. We'd rather free your time than hold a meeting that may not be useful to you right now.",
+          "The product tour shows everything at your own pace: {tour_url}",
           "Grab time here if useful later: {form_url}",
+          "And if we got this wrong, just reply. A real person reads it.",
           "{sender_name}"
         ]
       },
@@ -640,9 +656,11 @@
         "subject": "About your demo request",
         "body": [
           "Hi {first_name},",
-          "Thanks for your interest in a demo.",
+          "Thank you for requesting a demo, and for your interest in what we're building.",
+          "We'd like to give you a demo that is actually useful, and for that we need to know a little about your company. Your request came from a personal address, so we couldn't prepare.",
           "Please rebook with your work email so we can prepare properly: {form_url}",
-          "In the meantime, here is the product tour: {tour_url}",
+          "In the meantime, the product tour shows everything at your own pace: {tour_url}",
+          "If a personal address is the only one you have, just reply to this email and tell us a bit about what you're working on. A real person reads it.",
           "{sender_name}"
         ]
       },
@@ -653,9 +671,10 @@
         "subject": "About your demo request",
         "body": [
           "Hi {first_name},",
-          "Thanks for your interest in a demo.",
-          "From what you shared, a live demo isn't the best fit right now.",
-          "You can see the product at your own pace here: {tour_url}",
+          "Thank you for taking the time to request a demo, and for your interest in what we're building.",
+          "We looked at your request carefully, and from what you shared, a live demo isn't the best fit right now. We'd rather tell you that today than take up your time on a call that may not help you.",
+          "If you'd still like to explore, the product tour shows everything at your own pace: {tour_url}",
+          "If we've misjudged this, or things change on your side, just reply to this email. A real person reads it, and we'd be glad to take another look.",
           "{sender_name}"
         ]
       },
@@ -666,8 +685,9 @@
         "subject": "About your demo request",
         "body": [
           "Hi {first_name},",
-          "Thanks for reaching out.",
-          "We're not looking for services right now, so we haven't booked a demo.",
+          "Thank you for reaching out, and for thinking of us.",
+          "We're not looking for services right now, so we haven't booked a demo. We didn't want to leave you waiting for a reply.",
+          "We wish you the best with your work, and if our needs change we'll know where to find you.",
           "{sender_name}"
         ]
       },
@@ -678,8 +698,9 @@
         "subject": "About your demo request",
         "body": [
           "Hi {first_name},",
-          "Thanks for reaching out.",
-          "For partnerships or press, reply to this email and we'll route it.",
+          "Thank you for reaching out. We're glad you're interested in what we're building.",
+          "Our demos are set up for teams evaluating the product, so we haven't booked one here. That isn't a no to talking.",
+          "For partnerships or press, reply to this email and we'll route it to the right person.",
           "{sender_name}"
         ]
       },
@@ -690,9 +711,10 @@
         "subject": "About your demo request",
         "body": [
           "Hi {first_name},",
-          "Thanks for your interest in a demo.",
-          "The best place to start is the product tour: {tour_url}",
+          "Thank you for requesting a demo, and for your interest in what we're building.",
+          "From what we know so far, the best place to start is the product tour. It covers what a first call would, and you can go through it whenever suits you: {tour_url}",
           "Grab time here if helpful: {form_url}",
+          "If you have a question the tour doesn't answer, reply to this email. A real person reads it.",
           "{sender_name}"
         ]
       }

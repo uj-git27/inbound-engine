@@ -36,7 +36,7 @@ const slackReply = reply(
 test('web facts: parent, subsidiaries and facts each carry their source; low confidence is dropped', () => {
   const web = companyFactsFromExa(slackReply, 'slack.com');
   assert.equal(web.verified, true);
-  assert.deepEqual(web.parent, { name: 'Salesforce', domain: 'salesforce.com', url: 'https://pitchbook.com/profiles/slack', source: 'Exa' });
+  assert.deepEqual(web.parent, { name: 'Salesforce', domain: 'salesforce.com', url: 'https://pitchbook.com/profiles/slack', urls: ['https://pitchbook.com/profiles/slack'], source: 'Exa' });
   assert.deepEqual(web.subsidiaries.map((s) => s.domain), ['rimeto.com', 'woven.com']);
   assert.deepEqual([web.facts.headcount.min, web.facts.headcount.max, web.facts.headcount.url], [2935, 2935, 'https://corpdigest.com/company/slack']);
   assert.equal(web.facts.hq_country.value, 'United States');

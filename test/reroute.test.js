@@ -49,11 +49,15 @@ test('Tier C marked "Wrong: A" goes to the AE: booked, confirmation sent, brief 
   assert.equal(c.google.events.length, 1);
   assert.equal(c.google.events[0].summary, rules.booking.title);
   assert.deepEqual(sent(c), ['tier_a_confirm']);
-  const post = c.slack.posts.at(-1);
+  const post = c.slack.posts.at(-2);
   assert.equal(post.channel, 'ae-alerts');
   assert.match(post.text, /^For: Alex Morgan\n\*Tier C · 16\/100\* · now handled as Tier A\n/);
   assert.match(post.text, /Moved to Tier A by Jordan Lee/);
   assert.deepEqual(buttons(post), [], 'the verdict is already given, so the moved alert has no verdict buttons');
+  // The AE also gets the optional intro email to review, in the new alert's thread.
+  const draft = c.slack.posts.at(-1);
+  assert.equal(draft.thread_ts, post.ts);
+  assert.deepEqual(buttons(draft), ['Send intro email']);
   assert.deepEqual([row(c, '04').rep_verdict, row(c, '04').route, row(c, '04').owner], ['Wrong: A', '#ae-alerts', 'Alex Morgan']);
   // One verdict per lead: a second click changes nothing.
   assert.match((await act(c, '04', 'verdict_wrong_B')).message, /already recorded: Wrong: A/);
@@ -106,7 +110,7 @@ test('a disqualified lead marked "Wrong: A" is rescued to the AE', async () => {
   await runSample(sample('12'), c);
   const result = await act(c, '12', 'verdict_wrong_A');
   assert.equal(result.ok, true);
-  const post = c.slack.posts.at(-1);
+  const post = c.slack.posts.at(-2);
   assert.equal(post.channel, 'ae-alerts');
   assert.match(post.text, /^For: Alex Morgan\n\*Not scored \(the engine disqualified it: headcount out of range\)\* · now handled as Tier A\n/);
   assert.match(post.text, /\*Why this tier:\* not scored\. The engine's reason: Headcount 40 is outside 200 to 2000/);

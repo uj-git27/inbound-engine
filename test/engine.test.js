@@ -183,7 +183,7 @@ test('DEMO_MODE: the invite goes to DEMO_INBOX and aliases skip the person and p
   const { got } = await runSample(sample('01'), c);
   assert.deepEqual(c.google.events[0].attendees, [{ email: 'demo@inbox.example' }]);
   assert.equal(got.calls.includes('apollo_person'), false);
-  assert.equal(c.slack.posts.length, 2, 'the brief and its "Confirmation sent" thread reply, no contact follow-up');
+  assert.equal(c.slack.posts.length, 3, 'the brief, "Confirmation sent" and the intro draft in its thread; no contact follow-up');
   assert.equal(c.clay.rows.length, 0);
   // Every email goes to DEMO_INBOX, with no BCC.
   assert.deepEqual(c.google.emails.map((e) => [e.to, e.bcc]), [['demo@inbox.example', null]]);

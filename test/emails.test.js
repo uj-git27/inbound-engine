@@ -82,6 +82,7 @@ test('sender display name, reply-to and BCC are right for every template', () =>
   const lead = { name: 'Dana Reyes', email: 'dana@acme.com' };
   const expected = {
     tier_a_confirm: ['Alex Morgan', 'jainutsav67+alex@gmail.com', 'jainutsav67+alex@gmail.com'],
+    ae_intro: ['Alex Morgan', 'jainutsav67+alex@gmail.com', 'jainutsav67+alex@gmail.com'],
     tier_b_confirm: ['Alex Morgan', 'jainutsav67+alex@gmail.com', 'jainutsav67+alex@gmail.com'],
     tier_b_release: ['Alex Morgan', 'jainutsav67+alex@gmail.com', 'jainutsav67+alex@gmail.com'],
     reject_personal_email: ['Utsav (Zenskar concept demo)', 'jainutsav67@gmail.com', null],
