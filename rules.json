@@ -46,31 +46,67 @@
   "form": {
     "title": "Book a concept demo",
     "labels": {
-      "name": "Full name",
+      "first_name": "First name",
+      "last_name": "Last name",
       "email": "Work email",
+      "employees": "Number of employees",
       "title": "Job title",
-      "company": "Company name",
-      "first_date": "Preferred date",
-      "first_time": "Preferred time",
-      "timezone": "Your time zone"
+      "help": "How can we help?",
+      "lead_source": "How did you hear about us?"
     },
     "fields": {
-      "name": "full name",
+      "first_name": "first name",
+      "last_name": "last name",
       "email": "email",
+      "employees": "employees",
       "title": "job title",
-      "company": "company",
-      "website": "website",
-      "first_date": "(first|preferred).*date",
-      "first_time": "(first|preferred).*time",
-      "backup_date": "backup.*date",
-      "backup_time": "backup.*time",
-      "timezone": "time ?zone"
+      "help": "how can we help",
+      "lead_source": "how did you hear"
     },
     "required": [
-      "name",
+      "first_name",
+      "last_name",
       "email",
-      "company"
+      "title"
     ],
+    "employee_bands": [
+      {
+        "label": "1-10",
+        "min": 1,
+        "max": 10
+      },
+      {
+        "label": "11-50",
+        "min": 11,
+        "max": 50
+      },
+      {
+        "label": "51-200",
+        "min": 51,
+        "max": 200
+      },
+      {
+        "label": "201-500",
+        "min": 201,
+        "max": 500
+      },
+      {
+        "label": "501-1,000",
+        "min": 501,
+        "max": 1000
+      },
+      {
+        "label": "1,001-5,000",
+        "min": 1001,
+        "max": 5000
+      },
+      {
+        "label": "5,001+",
+        "min": 5001,
+        "max": 1000000
+      }
+    ],
+    "headcount_mismatch_bands": 1,
     "max_field_length": 300,
     "thank_you": "Thanks! We've got your request and will be in touch shortly."
   },
@@ -403,15 +439,13 @@
   ],
   "booking": {
     "slot_timezone": "America/New_York",
-    "slot_label": "ET",
-    "slots": [
-      "10:00",
-      "13:00",
-      "16:00"
-    ],
+    "day_start": "09:00",
+    "day_end": "17:00",
     "duration_minutes": 30,
     "min_lead_hours": 2,
-    "search_business_days": 10,
+    "weekdays_ahead": 5,
+    "no_pick_minutes": 15,
+    "slot_taken_note": "Your requested time was taken, so we've booked {new_time}. Reply to move it.",
     "title": "Zenskar concept demo by Utsav",
     "sdr_title_suffix": " | SDR to take",
     "buyer_timezones": {
@@ -572,7 +606,12 @@
     "team_reply_to": "jainutsav67@gmail.com",
     "footer": "Concept demo by Utsav, built on public data. Not affiliated with Zenskar.",
     "productTourUrl": "https://www.zenskar.com/product-tour",
-    "bcc_ae_on": ["tier_a_confirm", "ae_intro", "tier_b_confirm", "tier_b_release"],
+    "bcc_ae_on": [
+      "tier_a_confirm",
+      "ae_intro",
+      "tier_b_confirm",
+      "tier_b_release"
+    ],
     "signal_labels": {
       "funding": "funding round",
       "m_and_a": "acquisition",
@@ -598,6 +637,7 @@
         "body": [
           "Hi {first_name},",
           "Thanks for booking a demo with us. You're confirmed for {meeting_time}.",
+          "{slot_change_line}",
           "{signal_line}",
           "Here are the 3 things we'll cover:\n{topics}",
           "Optional pre-reading, if you'd like a head start, is our product tour: {tour_url}",
@@ -627,6 +667,7 @@
         "body": [
           "Hi {first_name},",
           "Thanks for the conversation with {sdr_name}. You're confirmed for {meeting_time}.",
+          "{slot_change_line}",
           "{signal_line}",
           "Here are the 3 things we'll cover:\n{topics}",
           "Optional pre-reading, if you'd like a head start, is our product tour: {tour_url}",

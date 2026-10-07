@@ -146,7 +146,7 @@ test('a new company that books is saved to the CRM with its details, and the con
     [company.name, company.headcount, company.country, company.industry, company.funding_stage, company.tier, company.score],
     ['Northwind Freight', 800, 'United States', 'logistics & supply chain', 'Series A', 'B', 42],
   );
-  assert.match(company.demo_slot, /^\d{4}-\d{2}-\d{2} 10:00 ET$/);
+  assert.match(company.demo_slot, /\d{1,2}:\d{2} (AM|PM)/);
   assert.match(company.reasons, /persona 15\/30 \(founder ceo\)/);
   assert.ok(company.enriched_at);
   const contact = c.crm.contacts.get('sofia@northwind-freight.com');
@@ -158,7 +158,7 @@ test('a meeting booked later by a person also reaches the CRM record', async () 
   await runSample(sample('04'), c);
   assert.equal(c.crm.rows.get('brightpath-hr.com').demo_slot, undefined);
   await act(c, '04', 'verdict_wrong_A');
-  assert.match(c.crm.rows.get('brightpath-hr.com').demo_slot, /10:00 ET$/);
+  assert.match(c.crm.rows.get('brightpath-hr.com').demo_slot, /\d{1,2}:\d{2} (AM|PM)/);
 });
 
 test('contact details found later are added to the CRM contact without losing the earlier ones', async () => {

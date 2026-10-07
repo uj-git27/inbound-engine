@@ -45,7 +45,7 @@ const cases = [
   ['throwaway email', custom('throwaway', { email: 'x@mailinator.com' }, DQ), ['reject_personal_email']],
   ['competitor employee', sample('06'), ['reject_generic']],
   ['student', custom('student', { title: 'Student' }, DQ), ['reject_generic']],
-  ['fake name, real address', custom('fake', { name: 'asdf' }, DQ), ['reject_generic']],
+  ['fake name, real address', custom('fake', { name: 'asdf asdf' }, DQ), ['reject_generic']],
   ['fake data with an address that cannot receive mail', sample('07'), []],
   ['recruiter', custom('recruiter', { title: 'Technical Recruiter' }, DQ), ['reject_vendor']],
   ['consultant', custom('consultant', { title: 'Billing Consultant' }, DQ), ['reject_vendor']],
@@ -156,7 +156,7 @@ test('no template is ever sent twice to the same lead', async () => {
 test('untouched Tier C defaults to nurture after 4 hours, not before, and only once', async () => {
   const c = getConnectors();
   await runSample(sample('04'), c);
-  assert.deepEqual(await sweep({ connectors: c, now: Date.now() + 3 * HOUR }), { reminders: 0, released: 0, nurtured: 0, errors: [] });
+  assert.deepEqual(await sweep({ connectors: c, now: Date.now() + 3 * HOUR }), { booked: 0, reminders: 0, released: 0, nurtured: 0, errors: [] });
   assert.deepEqual(sent(c), []);
   assert.equal((await sweep({ connectors: c, now: Date.now() + 4.1 * HOUR })).nurtured, 1);
   assert.deepEqual(sent(c), ['nurture_tour']);
@@ -188,7 +188,7 @@ test('Tier B: reminder 24 hours before, automatic release 4 hours before', async
   const c = getConnectors();
   await runSample(sample('03'), c);
   const start = Date.parse(JSON.parse(row(c, sample('03')).fields.state_json).booking.start);
-  assert.deepEqual(await sweep({ connectors: c, now: start - 30 * HOUR }), { reminders: 0, released: 0, nurtured: 0, errors: [] });
+  assert.deepEqual(await sweep({ connectors: c, now: start - 30 * HOUR }), { booked: 0, reminders: 0, released: 0, nurtured: 0, errors: [] });
 
   assert.equal((await sweep({ connectors: c, now: start - 23 * HOUR })).reminders, 1);
   assert.equal(c.slack.posts.at(-1).channel, 'sdr-inbound');
@@ -208,7 +208,7 @@ test('Tier B confirmed in time is neither reminded nor released', async () => {
   await runSample(sample('03'), c);
   await runAction({ leadId: leadIdOf(sample('03')), action: 'confirm_meeting', connectors: c });
   const start = Date.parse(JSON.parse(row(c, sample('03')).fields.state_json).booking.start);
-  assert.deepEqual(await sweep({ connectors: c, now: start - 2 * HOUR }), { reminders: 0, released: 0, nurtured: 0, errors: [] });
+  assert.deepEqual(await sweep({ connectors: c, now: start - 2 * HOUR }), { booked: 0, reminders: 0, released: 0, nurtured: 0, errors: [] });
   assert.deepEqual(sent(c), ['tier_b_confirm']);
   assert.equal(c.google.events.length, 1);
 });

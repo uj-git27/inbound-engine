@@ -8,12 +8,11 @@ import { rules } from '../lib/rules.js';
 
 const saved = { ...process.env };
 
-async function submit({ email, name, company }) {
+async function submit({ email, name }) {
   const payload = structuredClone(fixture);
   const set = (label, value) => { payload.data.fields.find((f) => f.label === label).value = value; };
   if (email) set('Work email', email);
-  if (name) set('Full name', name);
-  if (company) set('Company name', company);
+  if (name) set('First name', name);
   payload.data.submissionId = `sub-${email}`;
   await POST(new Request('http://localhost/api/lead', { method: 'POST', body: JSON.stringify(payload) }));
   await background.last;

@@ -4,6 +4,9 @@
       "maxDuration": 300
     }
   },
+  "rewrites": [
+    { "source": "/book", "destination": "/api/book" }
+  ],
   "crons": [
     { "path": "/api/summary", "schedule": "0 14 * * 1" },
     { "path": "/api/sweep", "schedule": "40 13 * * *" }

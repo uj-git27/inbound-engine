@@ -30,23 +30,22 @@ export async function POST(request) {
   }
 
   const connectors = getConnectors();
+  const table = rules.tables.leads;
+  const timeoutMs = rules.limits.webhook_write_timeout_ms;
   let record;
   try {
-    // Tally retries a delivery it thinks failed; the same submission is only processed once.
     const leadId = leadIdOf(payload);
-    if (leadId && (await connectors.airtable.findByField(rules.tables.leads, 'lead_id', leadId)).length) {
+    const [existing] = leadId ? await connectors.airtable.findByField(table, 'lead_id', leadId) : [];
+    if (existing?.fields.raw_payload) {
+      // Tally retries a delivery it thinks failed; the same submission is only processed once.
       return reply(200, { ok: true, duplicate: true });
     }
-    record = await connectors.airtable.createRecord(
-      rules.tables.leads,
-      {
-        lead_id: leadIdOf(payload) ?? `no-id-${Date.now()}`,
-        status: 'received',
-        received_at: new Date().toISOString(),
-        raw_payload: raw,
-      },
-      { timeoutMs: rules.limits.webhook_write_timeout_ms },
-    );
+    const received = { status: 'received', received_at: new Date().toISOString(), raw_payload: raw };
+    // The lead can pick a time on the booking page before the form reaches us. That pick sits on
+    // a placeholder row with the same submission ID, which the form now fills in.
+    record = existing
+      ? await connectors.airtable.updateRecord(table, existing.id, received)
+      : await connectors.airtable.createRecord(table, { lead_id: leadId ?? `no-id-${Date.now()}`, ...received }, { timeoutMs });
   } catch (err) {
     // Non-2xx makes Tally retry, so the lead is not lost.
     console.error('lead: Airtable write failed:', err.message);
