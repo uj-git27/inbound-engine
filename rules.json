@@ -75,7 +75,8 @@
     "jainutsav67+customer@gmail.com": "acme-test.com",
     "jainutsav67+deal@gmail.com": "globex-test.com",
     "jainutsav67+initech@gmail.com": "initech-test.com",
-    "jainutsav67+sub@gmail.com": "slack.com"
+    "jainutsav67+sub@gmail.com": "slack.com",
+    "jainutsav67+child@gmail.com": "acme-labs-test.com"
   },
   "disqualify": {
     "personal_email_domains": [

@@ -27,6 +27,13 @@
     "fresh": true
   },
   {
+    "domain": "acme-labs-test.com",
+    "name": "TEST: Acme Labs (subsidiary of Acme)",
+    "lifecyclestage": "lead",
+    "owner_role": "csm",
+    "parent": "acme-test.com"
+  },
+  {
     "domain": "salesforce.com",
     "name": "TEST: pretend customer",
     "lifecyclestage": "customer",

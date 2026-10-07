@@ -22,9 +22,9 @@ test('rules: scoring adds up to 100 and tiers match the spec', () => {
   });
 });
 
-test('rules: demo aliases map to the 6 spec domains', () => {
+test('rules: demo aliases map to the 6 spec domains, plus the HubSpot-linked subsidiary', () => {
   assert.deepEqual(Object.values(rules.demo_aliases), [
-    'temporal.io', 'launchdarkly.com', 'acme-test.com', 'globex-test.com', 'initech-test.com', 'slack.com',
+    'temporal.io', 'launchdarkly.com', 'acme-test.com', 'globex-test.com', 'initech-test.com', 'slack.com', 'acme-labs-test.com',
   ]);
 });
 
@@ -33,8 +33,8 @@ test('schema: Leads, Cache and CRM tables with unique field names', () => {
   for (const t of tableDefinitions) assert.equal(new Set(t.fields.map((f) => f.name)).size, t.fields.length);
 });
 
-test('seed: the 4 TEST records, owned by real team roles', () => {
-  assert.deepEqual(seed.map((r) => r.domain), ['acme-test.com', 'globex-test.com', 'initech-test.com', 'salesforce.com']);
+test('seed: the TEST records, owned by real team roles', () => {
+  assert.deepEqual(seed.map((r) => r.domain), ['acme-test.com', 'globex-test.com', 'initech-test.com', 'acme-labs-test.com', 'salesforce.com']);
   for (const r of seed) assert.ok(rules.team[r.owner_role]);
 });
 

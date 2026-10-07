@@ -188,6 +188,15 @@ test('expansion still works on a rerun, when the company data now comes from the
   assert.equal(second.got.calls.length, 0);
 });
 
+test('a subsidiary linked to a customer inside the CRM is an expansion lead with no paid calls', async () => {
+  const c = getConnectors();
+  const child = { id: 'child', name: 'Robin Vale', email: 'jainutsav67+child@gmail.com', title: 'Controller', company: 'Acme Labs', expect: { outcome: 'expansion', channel: 'cs-alerts', calls: 0 } };
+  const { problems } = await runSample(child, c);
+  assert.deepEqual(problems, []);
+  assert.match(c.slack.posts[0].text, /^For: Priya Shah\n\*Expansion lead\*/);
+  assert.match(c.slack.posts[0].text, /its parent TEST: Acme \(acme-test\.com\) is a customer/);
+});
+
 test('a duplicate is skipped but RevOps is told', async () => {
   const c = getConnectors();
   await runSample(sample('03'), c);
