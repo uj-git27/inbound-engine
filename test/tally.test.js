@@ -67,3 +67,18 @@ test('domainOf: strips protocol, www and path; rejects junk', () => {
   assert.equal(domainOf('asdf'), null);
   assert.equal(domainOf(null), null);
 });
+
+test('form: the labels built for Tally are the ones the parser finds, with no phone field', async () => {
+  const { rules } = await import('../lib/rules.js');
+  const { formBlocks, slotLabel } = await import('../lib/tally-form.js');
+  const labels = Object.values(rules.form.labels);
+  for (const [key, pattern] of Object.entries(rules.form.fields)) {
+    const first = labels.find((label) => new RegExp(pattern, 'i').test(label));
+    assert.equal(first, rules.form.labels[key], `pattern for ${key} should find its own label first`);
+  }
+  assert.deepEqual(rules.booking.slots.map(slotLabel), ['10am ET', '1pm ET', '4pm ET']);
+  const blocks = formBlocks();
+  assert.equal(blocks.filter((b) => b.type === 'TITLE').length, 9);
+  assert.equal(blocks.some((b) => /phone/i.test(JSON.stringify(b.payload))), false);
+  assert.equal(blocks.at(-1).payload.html, rules.form.thank_you);
+});

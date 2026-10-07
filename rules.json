@@ -13,6 +13,18 @@
   "tables": { "leads": "Leads", "cache": "Cache", "crm": "CRM" },
 
   "form": {
+    "title": "Book a concept demo",
+    "labels": {
+      "name": "Full name",
+      "email": "Work email",
+      "title": "Job title",
+      "website": "Company website",
+      "first_date": "First choice date",
+      "first_time": "First choice time",
+      "backup_date": "Backup date",
+      "backup_time": "Backup time",
+      "timezone": "Your time zone"
+    },
     "fields": {
       "name": "full name",
       "email": "email",

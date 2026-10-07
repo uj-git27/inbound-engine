@@ -29,6 +29,8 @@ async function gemini() {
       response = await client.generate(companyProfilePrompt(domain), { jsonMode: true, timeoutMs: 60_000 });
     } catch (err) {
       // Spec fallback: if JSON output with search errors, ask for JSON in the prompt only.
+      // Only a rejected request (400) means that; quota or auth errors would fail again.
+      if (err.status !== 400) throw err;
       console.log(`  gemini ${domain}: JSON mode + search failed (${err.message}); retrying with JSON in the prompt only`);
       mode = 'JSON in prompt + search';
       response = await client.generate(companyProfilePrompt(domain), { jsonMode: false, timeoutMs: 60_000 });
