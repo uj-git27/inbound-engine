@@ -52,20 +52,23 @@ test('open deal alias: alert in #ae-alerts for the deal owner', async () => {
   assert.equal(row.status, 'routed_open_deal');
 });
 
-test('closed lost (known, not active): continues, carrying the history', async () => {
+test('closed lost (known, not active): continues to scoring, carrying the history', async () => {
   const { row, posts } = await submit({ email: 'jainutsav67+initech@gmail.com', company: 'Initech' });
-  assert.equal(posts[0].channel, 'revops-engine');
-  assert.match(posts[0].text, /^For: Ravi Iyer\n/);
+  assert.equal(posts[0].channel, 'ae-alerts');
+  assert.match(posts[0].text, /^For: Alex Morgan\n\*Tier A/);
   assert.match(posts[0].text, /lost: Pricing, last touch 2026-06-15/);
-  assert.equal(row.status, 'awaiting_scoring');
+  assert.match(posts[0].text, /source: CRM/);
+  assert.equal(row.status, 'tier_a');
 });
 
-test('unknown company: logged note in #revops-engine, not tagged DEMO', async () => {
+test('unknown company: Tier C in #inbound-review plus a low-confidence post, not tagged DEMO', async () => {
   const { row, posts } = await submit({ email: 'dana@unknown-co.com', company: 'Unknown Co' });
-  assert.equal(posts[0].channel, 'revops-engine');
-  assert.match(posts[0].text, /no record for this domain/);
+  assert.deepEqual(posts.map((p) => p.channel), ['inbound-review', 'inbound-review']);
+  assert.match(posts[0].text, /^For: Jordan Lee\n\*Tier C/);
+  assert.match(posts[1].text, /Low confidence/);
   assert.equal(row.demo, false);
-  assert.equal(row.status, 'awaiting_scoring');
+  assert.equal(row.status, 'tier_c');
+  assert.equal(row.flags, 'low confidence');
 });
 
 test('form text cannot inject Slack links or mentions', async () => {

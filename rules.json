@@ -182,7 +182,9 @@
     "not_a_buyer_industries": [
       "venture capital",
       "private equity",
+      "venture capital & private equity",
       "staffing",
+      "staffing & recruiting",
       "recruiting"
     ],
     "headcount_min": 200,
@@ -220,6 +222,22 @@
       "haiti",
       "guyana",
       "suriname"
+    ],
+    "consumer_industries": [
+      "consumer goods",
+      "consumer services",
+      "consumer electronics",
+      "retail",
+      "restaurants",
+      "food & beverages",
+      "apparel & fashion",
+      "cosmetics",
+      "sporting goods",
+      "luxury goods & jewelry",
+      "leisure, travel & tourism",
+      "gambling & casinos",
+      "music",
+      "entertainment"
     ]
   },
   "signals": {
@@ -243,11 +261,14 @@
             "software",
             "saas",
             "fintech",
+            "financial services",
             "ai",
             "artificial intelligence",
             "machine learning",
             "data",
             "infrastructure",
+            "information technology",
+            "internet",
             "api",
             "apis",
             "payments",
@@ -260,7 +281,10 @@
           "keywords": [
             "health",
             "healthcare",
+            "hospital",
+            "medical",
             "logistics",
+            "supply chain",
             "marketplace",
             "marketplaces",
             "telecom",
@@ -274,7 +298,12 @@
           "points": 5
         }
       },
-      "funded": 15
+      "funded": 15,
+      "funded_excludes": [
+        "bootstrapped",
+        "none",
+        "unfunded"
+      ]
     },
     "persona": {
       "max": 30,
@@ -282,7 +311,49 @@
       "revops_billing_finance_manager": 21,
       "founder_ceo": 15,
       "engineering": 9,
-      "other": 3
+      "other": 3,
+      "patterns": {
+        "finance_leader": [
+          "cfo",
+          "chief financial officer",
+          "vp finance",
+          "vp of finance",
+          "vice president finance",
+          "vice president of finance",
+          "head of finance",
+          "controller",
+          "finance director",
+          "director of finance"
+        ],
+        "revops_billing_finance_manager": [
+          "revops",
+          "revenue operations",
+          "rev ops",
+          "billing",
+          "finance manager",
+          "finance operations",
+          "accounting manager",
+          "accounts receivable",
+          "fp&a",
+          "order to cash"
+        ],
+        "founder_ceo": [
+          "founder",
+          "co-founder",
+          "cofounder",
+          "ceo",
+          "chief executive officer"
+        ],
+        "engineering": [
+          "engineer",
+          "engineering",
+          "cto",
+          "chief technology officer",
+          "developer",
+          "architect",
+          "devops"
+        ]
+      }
     },
     "billing_model": {
       "max": 15,

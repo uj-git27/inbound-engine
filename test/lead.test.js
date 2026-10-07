@@ -32,12 +32,12 @@ test('DRY_RUN with no keys: logs the raw payload first, replies 200, then parses
   assert.equal(row.fields.lead_id, 'sub_fixture_1');
 
   await background.last;
-  assert.equal(row.fields.status, 'awaiting_scoring');
+  assert.equal(row.fields.status, 'tier_a');
   assert.equal(row.fields.email, 'dana.reyes@temporal.io');
   assert.equal(row.fields.domain, 'temporal.io');
   assert.equal(row.fields.first_choice, '2026-10-14 13:00 ET');
   assert.equal(row.fields.time_zone, 'PT');
-  assert.match(row.fields.timeline, /received\n.* parsed\n.* awaiting_scoring$/);
+  assert.match(row.fields.timeline, /received\n.* parsed\n.* tier_a$/);
 });
 
 test('signing secret set: a valid signature is accepted', async () => {

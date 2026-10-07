@@ -1,0 +1,63 @@
+{
+  "apollo": {
+    "temporal.io": {
+      "name": "Temporal Technologies", "estimated_num_employees": 530, "country": "United States",
+      "industry": "information technology & services", "industries": ["information technology & services", "computer software"],
+      "latest_funding_stage": "Series E", "latest_funding_round_date": "2026-09-01T00:00:00.000+00:00",
+      "owned_by_organization_id": null, "suborganizations": []
+    },
+    "launchdarkly.com": {
+      "name": "LaunchDarkly", "estimated_num_employees": 600, "country": "United States",
+      "industry": "computer software", "industries": ["computer software"],
+      "latest_funding_stage": "Series D", "latest_funding_round_date": "2021-08-10T00:00:00.000+00:00",
+      "owned_by_organization_id": null, "suborganizations": []
+    },
+    "slack.com": {
+      "name": "Slack", "estimated_num_employees": 1800, "country": "United States",
+      "industry": "information technology & services", "industries": ["information technology & services", "computer software"],
+      "latest_funding_stage": "Merger / Acquisition", "latest_funding_round_date": "2020-12-01T00:00:00.000+00:00",
+      "owned_by_organization_id": "mock-salesforce",
+      "owned_by_organization": { "id": "mock-salesforce", "name": "Salesforce", "website_url": "http://www.salesforce.com" },
+      "suborganizations": []
+    },
+    "northwind-freight.com": {
+      "name": "Northwind Freight", "estimated_num_employees": 800, "country": "United States",
+      "industry": "logistics & supply chain", "industries": ["logistics & supply chain"],
+      "latest_funding_stage": "Series A", "latest_funding_round_date": "2025-03-01T00:00:00.000+00:00",
+      "owned_by_organization_id": null, "suborganizations": []
+    },
+    "brightpath-hr.com": {
+      "name": "Brightpath HR", "estimated_num_employees": 300, "country": "Canada",
+      "industry": "human resources", "industries": ["human resources"],
+      "latest_funding_stage": null, "owned_by_organization_id": null, "suborganizations": []
+    },
+    "tinyco-labs.com": {
+      "name": "TinyCo Labs", "estimated_num_employees": 40, "country": "United States",
+      "industry": "computer software", "industries": ["computer software"],
+      "latest_funding_stage": "Seed", "owned_by_organization_id": null, "suborganizations": []
+    },
+    "rheinwerk-systems.de": {
+      "name": "Rheinwerk Systems", "estimated_num_employees": 500, "country": "Germany",
+      "industry": "computer software", "industries": ["computer software"],
+      "latest_funding_stage": "Series B", "owned_by_organization_id": null, "suborganizations": []
+    },
+    "sunnyside-snacks.com": {
+      "name": "Sunnyside Snacks", "estimated_num_employees": 900, "country": "United States",
+      "industry": "consumer goods", "industries": ["consumer goods", "food & beverages"],
+      "latest_funding_stage": "Series C", "owned_by_organization_id": null, "suborganizations": []
+    }
+  },
+  "pricing": {
+    "temporal.io": { "model": "usage", "quote": "$50 per million Actions", "url": "https://temporal.io/pricing" },
+    "launchdarkly.com": { "model": "hybrid", "quote": "$12 per service connection per month, plus $10 per 1k client-side MAU", "url": "https://launchdarkly.com/pricing" },
+    "initech-test.com": { "model": "tiered", "quote": "Team plan $49 per user per month", "url": "https://initech-test.com/pricing" },
+    "northwind-freight.com": { "model": "contact_sales", "quote": "Contact sales for a quote", "url": "https://northwind-freight.com/pricing" },
+    "brightpath-hr.com": { "model": "tiered", "quote": "Starter $8 per employee per month", "url": "https://brightpath-hr.com/pricing" }
+  },
+  "signals": {
+    "temporal.io": [
+      { "type": "funding", "date": "2026-09-01", "url": "https://temporal.io/blog/series-e", "title": "Temporal raises $550M" }
+    ]
+  },
+  "person": {}
+}
