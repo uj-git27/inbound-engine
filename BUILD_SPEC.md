@@ -108,7 +108,7 @@ Every alert starts with "For: <name>".
   - Times: dropdown of 10am, 1pm or 4pm ET.
   - Time zone: dropdown of ET, CT, MT, PT or Other.
   - **No phone field.**
-- **Thank-you page:** "Thanks! Your calendar invite will arrive in a few minutes."
+- **Thank-you page** (change of 8 Oct 2026): "Thanks! We've got your request and will be in touch shortly." It no longer promises an invite, because disqualified and Tier C leads don't get one.
 - Write the raw payload to Airtable **first**, return 200, then run the pipeline in the background.
 - The Airtable status column updates after every step.
 
