@@ -2,7 +2,7 @@
   "name": "inbound-engine",
   "version": "0.1.0",
   "private": true,
-  "description": "Inbound demo-request engine. Concept built on public data. Not affiliated with Zenskar.",
+  "description": "Inbound demo-request engine. Concept built on public data. Not affiliated with any real company.",
   "type": "module",
   "engines": {
     "node": "22.x"

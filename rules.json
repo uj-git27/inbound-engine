@@ -1,5 +1,5 @@
 {
-  "disclaimer": "Concept built on public data. Not affiliated with Zenskar.",
+  "disclaimer": "Concept built on public data. Not affiliated with any real company.",
 
   "team": {
     "ae": { "name": "Alex Morgan", "role": "AE", "channel": "ae-alerts", "gets": "Tier A, open deals" },
@@ -63,7 +63,7 @@
     "billing_vendor_domains": [
       "chargebee.com", "recurly.com", "zuora.com", "stripe.com", "maxio.com", "chargify.com", "saasoptics.com",
       "metronome.com", "getlago.com", "withorb.com", "m3ter.com", "amberflo.io", "togai.com", "ordwaylabs.com",
-      "paddle.com", "billingplatform.com", "zenskar.com"
+      "paddle.com", "billingplatform.com"
     ],
     "student_or_job_seeker_titles": [
       "student", "intern", "graduate", "undergraduate", "phd candidate", "job seeker", "looking for work",
@@ -141,7 +141,7 @@
     "duration_minutes": 30,
     "min_lead_hours": 2,
     "search_business_days": 10,
-    "title": "Zenskar concept demo by Utsav",
+    "title": "Finance automation concept demo by Utsav",
     "sdr_title_suffix": " | SDR to take",
     "buyer_timezones": {
       "ET": "America/New_York",
