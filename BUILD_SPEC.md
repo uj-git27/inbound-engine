@@ -97,7 +97,8 @@ Every alert starts with "For: <name>".
 ## The flow
 
 ### Step 0: Form
-- **Fields:** full name, work email, job title, company website, first choice date and time, backup date and time, time zone.
+- **Fields** (change of 7 Oct 2026): full name, work email, job title, company name, preferred date and time, time zone. No website and no backup slot.
+  - The company domain comes from the work email domain (or the demo alias).
   - Times: dropdown of 10am, 1pm or 4pm ET.
   - Time zone: dropdown of ET, CT, MT, PT or Other.
   - **No phone field.**
@@ -199,7 +200,7 @@ Every alert starts with "For: <name>".
 
 ### Step 8: Book and route
 - **Booking rule:**
-  - Check free/busy. Book the first choice if it's free, else the backup, else the next free weekday slot (10am, 1pm or 4pm ET, within 10 business days).
+  - Check free/busy. Book the preferred slot if it's free, else the next free weekday slot (10am, 1pm or 4pm ET, within 10 business days).
   - A weekend, past or less-than-2-hours-away slot rolls forward.
   - The invite is 30 minutes long, titled "Finance automation concept demo by Utsav", with `sendUpdates=all`.
   - The description gives the buyer's local time, any slot change, and the disclaimer.

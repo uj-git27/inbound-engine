@@ -72,5 +72,5 @@ test('a payload with missing fields is logged as parse_error with the reason', a
   await background.last;
   const [row] = leads();
   assert.equal(row.fields.status, 'parse_error');
-  assert.match(row.fields.error, /email, website/);
+  assert.match(row.fields.error, /email, company/);
 });

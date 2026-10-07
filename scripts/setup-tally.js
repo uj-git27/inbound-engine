@@ -19,7 +19,9 @@ const listed = (json) => json.items ?? json.data ?? json.forms ?? json.webhooks 
 const forms = listed((await tally('/forms?limit=100')).json);
 let form = forms.find((f) => f.name === rules.form.title && f.status !== 'DELETED');
 if (form) {
-  console.log(`OK   form "${form.name}" exists (${form.id}), reused`);
+  // Re-sync the questions to rules.json. This replaces every block on the form.
+  await tally(`/forms/${form.id}`, { method: 'PATCH', body: { status: 'PUBLISHED', blocks: formBlocks() } });
+  console.log(`OK   form "${form.name}" exists (${form.id}), questions re-synced from rules.json`);
 } else {
   form = (await tally('/forms', { method: 'POST', body: { status: 'PUBLISHED', blocks: formBlocks() } })).json;
   console.log(`OK   form "${form.name}" created (${form.id}), status ${form.status}`);

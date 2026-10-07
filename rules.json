@@ -1,46 +1,74 @@
 {
   "disclaimer": "Concept built on public data. Not affiliated with any real company.",
-
   "team": {
-    "ae": { "name": "Alex Morgan", "role": "AE", "channel": "ae-alerts", "gets": "Tier A, open deals" },
-    "sdr": { "name": "Sam Patel", "role": "SDR", "channel": "sdr-inbound", "gets": "Tier B" },
-    "reviewer": { "name": "Jordan Lee", "role": "Human reviewer (SDR manager)", "channel": "inbound-review", "gets": "Tier C, disqualified, low-confidence" },
-    "csm": { "name": "Priya Shah", "role": "CSM", "channel": "cs-alerts", "gets": "Existing customers, expansion leads" },
-    "revops": { "name": "Ravi Iyer", "role": "RevOps", "channel": "revops-engine", "gets": "Errors, rate limits, fail-open, Monday summary" }
+    "ae": {
+      "name": "Alex Morgan",
+      "role": "AE",
+      "channel": "ae-alerts",
+      "gets": "Tier A, open deals"
+    },
+    "sdr": {
+      "name": "Sam Patel",
+      "role": "SDR",
+      "channel": "sdr-inbound",
+      "gets": "Tier B"
+    },
+    "reviewer": {
+      "name": "Jordan Lee",
+      "role": "Human reviewer (SDR manager)",
+      "channel": "inbound-review",
+      "gets": "Tier C, disqualified, low-confidence"
+    },
+    "csm": {
+      "name": "Priya Shah",
+      "role": "CSM",
+      "channel": "cs-alerts",
+      "gets": "Existing customers, expansion leads"
+    },
+    "revops": {
+      "name": "Ravi Iyer",
+      "role": "RevOps",
+      "channel": "revops-engine",
+      "gets": "Errors, rate limits, fail-open, Monday summary"
+    }
   },
   "alert_prefix": "For: ",
-
-  "tables": { "leads": "Leads", "cache": "Cache", "crm": "CRM" },
-
+  "tables": {
+    "leads": "Leads",
+    "cache": "Cache",
+    "crm": "CRM"
+  },
   "form": {
     "title": "Book a concept demo",
     "labels": {
       "name": "Full name",
       "email": "Work email",
       "title": "Job title",
-      "website": "Company website",
-      "first_date": "First choice date",
-      "first_time": "First choice time",
-      "backup_date": "Backup date",
-      "backup_time": "Backup time",
+      "company": "Company name",
+      "first_date": "Preferred date",
+      "first_time": "Preferred time",
       "timezone": "Your time zone"
     },
     "fields": {
       "name": "full name",
       "email": "email",
       "title": "job title",
+      "company": "company",
       "website": "website",
-      "first_date": "first.*date",
-      "first_time": "first.*time",
+      "first_date": "(first|preferred).*date",
+      "first_time": "(first|preferred).*time",
       "backup_date": "backup.*date",
       "backup_time": "backup.*time",
       "timezone": "time ?zone"
     },
-    "required": ["name", "email", "website"],
+    "required": [
+      "name",
+      "email",
+      "company"
+    ],
     "max_field_length": 300,
     "thank_you": "Thanks! Your calendar invite will arrive in a few minutes."
   },
-
   "demo_aliases": {
     "jainutsav67+temporal@gmail.com": "temporal.io",
     "jainutsav67+launchdarkly@gmail.com": "launchdarkly.com",
@@ -49,53 +77,151 @@
     "jainutsav67+initech@gmail.com": "initech-test.com",
     "jainutsav67+sub@gmail.com": "slack.com"
   },
-
   "disqualify": {
     "personal_email_domains": [
-      "gmail.com", "googlemail.com", "yahoo.com", "ymail.com", "hotmail.com", "outlook.com", "live.com", "msn.com",
-      "icloud.com", "me.com", "mac.com", "aol.com", "proton.me", "protonmail.com", "gmx.com", "mail.com",
-      "yandex.com", "zoho.com", "fastmail.com", "hey.com"
+      "gmail.com",
+      "googlemail.com",
+      "yahoo.com",
+      "ymail.com",
+      "hotmail.com",
+      "outlook.com",
+      "live.com",
+      "msn.com",
+      "icloud.com",
+      "me.com",
+      "mac.com",
+      "aol.com",
+      "proton.me",
+      "protonmail.com",
+      "gmx.com",
+      "mail.com",
+      "yandex.com",
+      "zoho.com",
+      "fastmail.com",
+      "hey.com"
     ],
     "throwaway_email_domains": [
-      "mailinator.com", "guerrillamail.com", "10minutemail.com", "tempmail.com", "temp-mail.org", "yopmail.com",
-      "sharklasers.com", "trashmail.com", "getnada.com", "dispostable.com", "maildrop.cc", "throwawaymail.com"
+      "mailinator.com",
+      "guerrillamail.com",
+      "10minutemail.com",
+      "tempmail.com",
+      "temp-mail.org",
+      "yopmail.com",
+      "sharklasers.com",
+      "trashmail.com",
+      "getnada.com",
+      "dispostable.com",
+      "maildrop.cc",
+      "throwawaymail.com"
     ],
     "billing_vendor_domains": [
-      "chargebee.com", "recurly.com", "zuora.com", "stripe.com", "maxio.com", "chargify.com", "saasoptics.com",
-      "metronome.com", "getlago.com", "withorb.com", "m3ter.com", "amberflo.io", "togai.com", "ordwaylabs.com",
-      "paddle.com", "billingplatform.com"
+      "chargebee.com",
+      "recurly.com",
+      "zuora.com",
+      "stripe.com",
+      "maxio.com",
+      "chargify.com",
+      "saasoptics.com",
+      "metronome.com",
+      "getlago.com",
+      "withorb.com",
+      "m3ter.com",
+      "amberflo.io",
+      "togai.com",
+      "ordwaylabs.com",
+      "paddle.com",
+      "billingplatform.com"
     ],
     "student_or_job_seeker_titles": [
-      "student", "intern", "graduate", "undergraduate", "phd candidate", "job seeker", "looking for work",
-      "seeking opportunities", "open to work", "unemployed", "researcher at university"
+      "student",
+      "intern",
+      "graduate",
+      "undergraduate",
+      "phd candidate",
+      "job seeker",
+      "looking for work",
+      "seeking opportunities",
+      "open to work",
+      "unemployed",
+      "researcher at university"
     ],
     "not_a_buyer_titles": [
-      "agency", "consultant", "consulting", "recruiter", "recruiting", "talent acquisition", "vendor", "reseller",
-      "investor", "venture partner", "analyst at vc", "journalist", "reporter", "press", "editor"
+      "agency",
+      "consultant",
+      "consulting",
+      "recruiter",
+      "recruiting",
+      "talent acquisition",
+      "vendor",
+      "reseller",
+      "investor",
+      "venture partner",
+      "analyst at vc",
+      "journalist",
+      "reporter",
+      "press",
+      "editor"
     ],
     "not_a_buyer_label": "not a buyer",
     "fake_data_patterns": [
       "^(test|asdf|qwerty|foo|bar|n/?a|none|xxx+|aaa+|abc|123+)$",
       "^(.)\\1{2,}$"
     ],
-    "fake_domains": ["example.com", "example.org", "test.com", "domain.com", "email.com", "localhost"],
+    "fake_domains": [
+      "example.com",
+      "example.org",
+      "test.com",
+      "domain.com",
+      "email.com",
+      "localhost"
+    ],
     "duplicate_window_days": 30
   },
-
   "freshness_days": 90,
-
   "gates": {
-    "not_a_buyer_industries": ["venture capital", "private equity", "staffing", "recruiting"],
+    "not_a_buyer_industries": [
+      "venture capital",
+      "private equity",
+      "staffing",
+      "recruiting"
+    ],
     "headcount_min": 200,
     "headcount_max": 2000,
     "americas_countries": [
-      "united states", "usa", "us", "canada", "mexico", "brazil", "argentina", "chile", "colombia", "peru",
-      "uruguay", "paraguay", "bolivia", "ecuador", "venezuela", "costa rica", "panama", "guatemala", "honduras",
-      "el salvador", "nicaragua", "belize", "dominican republic", "puerto rico", "jamaica", "trinidad and tobago",
-      "bahamas", "barbados", "cuba", "haiti", "guyana", "suriname"
+      "united states",
+      "usa",
+      "us",
+      "canada",
+      "mexico",
+      "brazil",
+      "argentina",
+      "chile",
+      "colombia",
+      "peru",
+      "uruguay",
+      "paraguay",
+      "bolivia",
+      "ecuador",
+      "venezuela",
+      "costa rica",
+      "panama",
+      "guatemala",
+      "honduras",
+      "el salvador",
+      "nicaragua",
+      "belize",
+      "dominican republic",
+      "puerto rico",
+      "jamaica",
+      "trinidad and tobago",
+      "bahamas",
+      "barbados",
+      "cuba",
+      "haiti",
+      "guyana",
+      "suriname"
     ]
   },
-
   "signals": {
     "window_months": 12,
     "points": {
@@ -107,14 +233,46 @@
       "international_expansion": 6
     }
   },
-
   "scoring": {
     "fit": {
       "max": 35,
       "industry": {
-        "core": { "points": 20, "keywords": ["software", "saas", "fintech", "ai", "artificial intelligence", "machine learning", "data", "infrastructure", "api", "apis", "payments", "developer tools", "cloud"] },
-        "adjacent": { "points": 12, "keywords": ["health", "healthcare", "logistics", "marketplace", "marketplaces", "telecom", "telecommunications", "media", "insurance", "iot"] },
-        "other_b2b": { "points": 5 }
+        "core": {
+          "points": 20,
+          "keywords": [
+            "software",
+            "saas",
+            "fintech",
+            "ai",
+            "artificial intelligence",
+            "machine learning",
+            "data",
+            "infrastructure",
+            "api",
+            "apis",
+            "payments",
+            "developer tools",
+            "cloud"
+          ]
+        },
+        "adjacent": {
+          "points": 12,
+          "keywords": [
+            "health",
+            "healthcare",
+            "logistics",
+            "marketplace",
+            "marketplaces",
+            "telecom",
+            "telecommunications",
+            "media",
+            "insurance",
+            "iot"
+          ]
+        },
+        "other_b2b": {
+          "points": 5
+        }
       },
       "funded": 15
     },
@@ -126,18 +284,38 @@
       "engineering": 9,
       "other": 3
     },
-    "billing_model": { "max": 15, "usage": 15, "hybrid": 15, "tiered": 8, "contact_sales": 0, "unknown": 0 },
-    "why_now": { "max": 20 }
+    "billing_model": {
+      "max": 15,
+      "usage": 15,
+      "hybrid": 15,
+      "tiered": 8,
+      "contact_sales": 0,
+      "unknown": 0
+    },
+    "why_now": {
+      "max": 20
+    }
   },
-
-  "tiers": { "A": 60, "B": 40 },
+  "tiers": {
+    "A": 60,
+    "B": 40
+  },
   "low_confidence_unknowns": 3,
-  "low_confidence_facts": ["headcount", "country", "industry", "funding", "person"],
-
+  "low_confidence_facts": [
+    "headcount",
+    "country",
+    "industry",
+    "funding",
+    "person"
+  ],
   "booking": {
     "slot_timezone": "America/New_York",
     "slot_label": "ET",
-    "slots": ["10:00", "13:00", "16:00"],
+    "slots": [
+      "10:00",
+      "13:00",
+      "16:00"
+    ],
     "duration_minutes": 30,
     "min_lead_hours": 2,
     "search_business_days": 10,
@@ -151,14 +329,19 @@
       "Other": "America/New_York"
     }
   },
-
   "customer_stories": {
     "default_usage": "Sardine",
-    "stories": ["Sardine", "Vertice", "Thriva", "Yembo", "Pontera"]
+    "stories": [
+      "Sardine",
+      "Vertice",
+      "Thriva",
+      "Yembo",
+      "Pontera"
+    ]
   },
-
-  "links": { "expiry_hours": 24 },
-
+  "links": {
+    "expiry_hours": 24
+  },
   "limits": {
     "external_call_timeout_ms": 20000,
     "webhook_write_timeout_ms": 8000,
