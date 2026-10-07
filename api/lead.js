@@ -31,6 +31,11 @@ export async function POST(request) {
   const connectors = getConnectors();
   let record;
   try {
+    // Tally retries a delivery it thinks failed; the same submission is only processed once.
+    const leadId = leadIdOf(payload);
+    if (leadId && (await connectors.airtable.findByField(rules.tables.leads, 'lead_id', leadId)).length) {
+      return reply(200, { ok: true, duplicate: true });
+    }
     record = await connectors.airtable.createRecord(
       rules.tables.leads,
       {

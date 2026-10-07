@@ -56,7 +56,7 @@ test('closed lost (known, not active): continues to scoring, carrying the histor
   const { row, posts } = await submit({ email: 'jainutsav67+initech@gmail.com', company: 'Initech' });
   assert.equal(posts[0].channel, 'ae-alerts');
   assert.match(posts[0].text, /^For: Alex Morgan\n\*Tier A/);
-  assert.match(posts[0].text, /lost: Pricing, last touch 2026-06-15/);
+  assert.match(posts[0].text, /lost reason "Pricing", last touch 2026-06-15/);
   assert.match(posts[0].text, /source: CRM/);
   assert.equal(row.status, 'tier_a');
 });

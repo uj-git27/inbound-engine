@@ -1,6 +1,8 @@
 import { rules } from '../lib/rules.js';
 import { verifyToken } from '../lib/token.js';
 import { getConnectors } from '../lib/connectors/index.js';
+import { contactFields } from '../lib/contact.js';
+import { contactFoundAlert } from '../lib/alerts.js';
 
 const reply = (status, body) => Response.json(body, { status });
 
@@ -11,7 +13,7 @@ const clean = (value) => {
 };
 
 // Clay's HTTP API column posts the enriched person here. Callback text is data only.
-// The Slack follow-up ("Contact found") is added with routing in phase 3.
+// Saves the contact to the Airtable lead (labelled "Clay") and posts a follow-up to the same channel.
 export async function POST(request) {
   let body;
   try {
@@ -23,22 +25,39 @@ export async function POST(request) {
     return reply(401, { ok: false, error: 'bad token' });
   }
 
-  const { airtable } = getConnectors();
+  const { airtable, slack } = getConnectors();
   const table = rules.tables.leads;
   const [record] = await airtable.findByField(table, 'lead_id', body.lead_id);
   if (!record) return reply(404, { ok: false, error: 'unknown lead' });
 
   const { token, ...payload } = body;
-  const fields = { clay_payload: JSON.stringify(payload) };
+  const contact = { pending: false };
   const person = {
-    linkedin: clean(body.linkedin),
-    person_title: clean(body.title),
-    role_start: clean(body.role_start),
-    previous_companies: clean(body.previous_companies),
+    linkedin: clean(body.linkedin) || null,
+    title: clean(body.title) || null,
+    role_start: clean(body.role_start) || null,
+    previous_companies: clean(body.previous_companies) ? clean(body.previous_companies).split(/,\s*/) : [],
+    source: 'Clay',
   };
-  if (Object.values(person).some(Boolean)) Object.assign(fields, person, { person_source: 'Clay' });
-  if (clean(body.phone)) Object.assign(fields, { phone: clean(body.phone), phone_source: clean(body.phone_source) || 'Clay' });
+  if (person.linkedin || person.title || person.role_start || person.previous_companies.length) contact.person = person;
+  if (clean(body.phone)) Object.assign(contact, { phone: clean(body.phone), phone_source: clean(body.phone_source) || 'Clay' });
 
+  let state = null;
+  try {
+    state = JSON.parse(record.fields.state_json ?? 'null');
+  } catch {
+    // no saved state: the contact is still stored on the row
+  }
+  const fields = contactFields(contact, process.env, { clay_payload: JSON.stringify(payload) });
+  if (state) {
+    state.contact = { ...state.contact, ...contact };
+    fields.state_json = JSON.stringify(state);
+  }
   await airtable.updateRecord(table, record.id, fields);
+
+  if (state?.channel) {
+    const followUp = contactFoundAlert({ channel: state.channel, lead: state.lead, contact, env: process.env });
+    await slack.postMessage(followUp.channel, followUp.text);
+  }
   return reply(200, { ok: true });
 }

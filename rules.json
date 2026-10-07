@@ -249,7 +249,16 @@
       "m_and_a": 8,
       "revenue_milestone": 6,
       "international_expansion": 6
-    }
+    },
+    "rules": {
+      "funding": "\\b(raises?|raised|secures?|secured|closes|closed|lands?|landed)\\b.{0,60}[$€£]\\s?\\d|\\bseries [a-h]\\b|\\bfunding round\\b|\\bseed round\\b",
+      "new_finance_leader": "\\b(appoints?|appointed|names?|named|hires?|hired|welcomes?|joins? as|promotes?|promoted)\\b.{0,80}\\b(cfo|chief financial officer|vp of finance|vp finance|head of finance|controller|chief accounting officer)\\b|\\bnew (cfo|chief financial officer)\\b",
+      "ipo_prep": "\\b(ipo|initial public offering|s-1|going public|public listing)\\b|\\bfiles? (confidentially )?(for|to go) public\\b",
+      "m_and_a": "\\b(acquires?|acquired|acquisition of|to acquire|merges? with|merger with)\\b",
+      "revenue_milestone": "[$]\\s?\\d+(\\.\\d+)?\\s?(m|million|b|billion) (in )?(arr|annual recurring revenue|annual revenue|revenue)\\b|\\b(arr|revenue) (of|reaches|reached|hits|hit|tops|topped|crosses|crossed|surpasses|surpassed) [$]?\\d",
+      "international_expansion": "\\b(expands? (in)?to|expansion (in)?to|opens? (a |its )?(new |first )?(office|hub|headquarters) in|launch(es|ed)? in (europe|emea|apac|asia|latin america|the uk|india|japan|australia|canada|germany|france|singapore))\\b"
+    },
+    "max_results": 10
   },
   "scoring": {
     "fit": {
@@ -402,6 +411,36 @@
   },
   "customer_stories": {
     "default_usage": "Sardine",
+    "default": "Vertice",
+    "by_industry": [
+      {
+        "story": "Thriva",
+        "keywords": [
+          "health",
+          "healthcare",
+          "hospital",
+          "medical"
+        ]
+      },
+      {
+        "story": "Yembo",
+        "keywords": [
+          "logistics",
+          "supply chain",
+          "marketplace",
+          "marketplaces"
+        ]
+      },
+      {
+        "story": "Pontera",
+        "keywords": [
+          "fintech",
+          "financial services",
+          "insurance",
+          "payments"
+        ]
+      }
+    ],
     "stories": [
       "Sardine",
       "Vertice",
@@ -420,6 +459,107 @@
     "per_domain_per_hour": 3,
     "paid_runs_per_hour": 40,
     "phone_wait_seconds": 60,
-    "firecrawl_concurrency": 2
-  }
+    "firecrawl_concurrency": 2,
+    "clay_wait_seconds": 90,
+    "fullenrich_wait_seconds": 60
+  },
+  "pricing": {
+    "usage": [
+      "per request",
+      "per api call",
+      "per call",
+      "per million",
+      "per 1k",
+      "per 1,000",
+      "per 1m",
+      "per gb",
+      "per hour",
+      "per minute",
+      "usage-based",
+      "usage based",
+      "pay as you go",
+      "pay-as-you-go",
+      "metered",
+      "per transaction",
+      "per event",
+      "per action",
+      "per credit",
+      "consumption",
+      "per token",
+      "per invocation"
+    ],
+    "tiered": [
+      "per user",
+      "per seat",
+      "per month",
+      "/month",
+      "/mo",
+      "per year",
+      "billed annually",
+      "billed monthly",
+      "starter",
+      "pro plan",
+      "business plan",
+      "team plan",
+      "free plan",
+      "per editor",
+      "per member"
+    ],
+    "contact_sales": [
+      "contact sales",
+      "contact us",
+      "talk to sales",
+      "request a quote",
+      "custom pricing",
+      "get a quote",
+      "talk to an expert",
+      "book a demo"
+    ],
+    "quote_max_length": 160
+  },
+  "brief": {
+    "pain": {
+      "usage": "Usage has to be pulled and priced before every invoice. With pricing like \"{quote}\", month-end close waits on usage data, and revenue is hard to forecast.",
+      "hybrid": "Plans plus usage means two billing motions. With pricing like \"{quote}\", finance reconciles subscription invoices and overage by hand.",
+      "tiered": "Plan changes, upgrades and proration mid-cycle. With pricing like \"{quote}\", every change is a manual invoice fix and a revenue schedule update.",
+      "contact_sales": "Deals are negotiated one by one (\"{quote}\"), so each contract tends to become a custom invoice schedule kept in a spreadsheet.",
+      "unknown": "Unknown: no pricing evidence was found."
+    },
+    "questions": {
+      "usage": [
+        "How do you get usage data into an invoice today, and how long does that take each month?",
+        "What happens when a customer disputes a usage charge?",
+        "How do you forecast revenue when usage moves month to month?"
+      ],
+      "hybrid": [
+        "Which part of an invoice takes the most manual work today: the plan or the usage?",
+        "How do you handle overages and mid-cycle plan changes?",
+        "How long does month-end close take, and what slows it down?"
+      ],
+      "tiered": [
+        "What happens in billing when a customer upgrades or downgrades mid-cycle?",
+        "How do you track renewals and price changes across plans?",
+        "Are you planning any usage-based or custom pricing in the next year?"
+      ],
+      "contact_sales": [
+        "How does a signed contract turn into an invoice schedule today?",
+        "How many contracts have terms your billing tool cannot express?",
+        "Who owns revenue recognition for custom deals, and what does it take?"
+      ],
+      "unknown": [
+        "How do you price today, and is that changing?",
+        "How much of invoicing is manual each month?",
+        "What does month-end close depend on that you would like to automate?"
+      ]
+    }
+  },
+  "emails": {
+    "sender_name": "Utsav",
+    "product_tour_url": "https://example.com/product-tour"
+  },
+  "review_override_actions": [
+    "send_sdr",
+    "confirm_anyway",
+    "promote_ae"
+  ]
 }

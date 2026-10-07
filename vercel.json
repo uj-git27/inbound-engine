@@ -3,5 +3,8 @@
     "api/*.js": {
       "maxDuration": 300
     }
-  }
+  },
+  "crons": [
+    { "path": "/api/summary", "schedule": "0 14 * * 1" }
+  ]
 }

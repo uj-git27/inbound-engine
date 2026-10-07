@@ -37,7 +37,7 @@ test('DRY_RUN with no keys: logs the raw payload first, replies 200, then parses
   assert.equal(row.fields.domain, 'temporal.io');
   assert.equal(row.fields.first_choice, '2026-10-14 13:00 ET');
   assert.equal(row.fields.time_zone, 'PT');
-  assert.match(row.fields.timeline, /received\n.* parsed\n.* tier_a$/);
+  assert.match(row.fields.timeline, /received\n.* parsed\n.* decided\n.* tier_a$/);
 });
 
 test('signing secret set: a valid signature is accepted', async () => {
