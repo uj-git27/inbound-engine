@@ -19,13 +19,12 @@ Build in the 4 phases at the bottom. **Stop after each phase** and show me a pas
   - **Google Calendar and Gmail:** one OAuth sign-in on my Gmail
   - **Airtable:** log, review queue and cache
   - **HubSpot free:** CRM; Airtable "CRM" table as fallback
-  - **Gemini with Google Search:** company data and company family
   - **Clay:** person match and phone, first choice (webhook in, callback out)
-  - **Apollo:** backup company data, person match fallback
+  - **Apollo:** company data and company family, person match fallback
   - **Exa:** why-now news
   - **Firecrawl:** pricing page
   - **FullEnrich:** phone backup
-  - **Claude API:** brief and email drafts
+  - **LLM writer (off for now):** the brief and email drafts use the template only. `LLM_PROVIDER=none|gemini|claude`, default `none`, lets a writer plug in later.
   - **Slack:** one bot token
 - **Rules:** every rule, list, weight, threshold, slot time, team name, channel and demo alias lives in `rules.json`.
 - **Keys:** only in env vars, never in code or GitHub. Create `.env.example` and `.gitignore` first.
@@ -33,9 +32,10 @@ Build in the 4 phases at the bottom. **Stop after each phase** and show me a pas
 ## Env vars
 ```
 BASE_URL, DRY_RUN, DEMO_MODE, DEMO_INBOX=jainutsav67@gmail.com, CRM_PROVIDER=hubspot|airtable, NOTIFIER=slack|teams, LINK_SECRET,
-TALLY_SIGNING_SECRET, AIRTABLE_TOKEN, AIRTABLE_BASE_ID, HUBSPOT_TOKEN, GEMINI_API_KEY, GEMINI_MODEL, APOLLO_API_KEY,
-CLAY_WEBHOOK_URL, EXA_API_KEY, FIRECRAWL_API_KEY, FULLENRICH_API_KEY, ANTHROPIC_API_KEY, CLAUDE_MODEL,
-GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN, SLACK_BOT_TOKEN, TEAMS_WEBHOOK_* (optional)
+TALLY_SIGNING_SECRET, AIRTABLE_TOKEN, AIRTABLE_BASE_ID, HUBSPOT_TOKEN, APOLLO_API_KEY, LLM_PROVIDER=none,
+CLAY_WEBHOOK_URL, EXA_API_KEY, FIRECRAWL_API_KEY, FULLENRICH_API_KEY,
+GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN, SLACK_BOT_TOKEN, TEAMS_WEBHOOK_* (optional),
+GEMINI_API_KEY, GEMINI_MODEL, ANTHROPIC_API_KEY, CLAUDE_MODEL (optional; only when LLM_PROVIDER is not none)
 ```
 
 ## Team and channels (in rules.json)
@@ -66,7 +66,7 @@ Every alert starts with "For: <name>".
   - Freshness: `propertiesWithHistory`.
   - Association IDs: deal→company 5 (or 341); parent→child company 13.
   - If Service keys fail, use `CRM_PROVIDER=airtable`.
-- **Gemini:**
+- **Gemini (not used while LLM_PROVIDER=none):**
   - `POST https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent` with header `x-goog-api-key` and `tools: [{google_search: {}}]`.
   - Sources come back in `candidates[0].groundingMetadata.groundingChunks[].web.{uri,title}`. The `uri` is a Google redirect link, which is fine to store and click.
   - Search grounding needs the paid tier (billing linked; 5,000 free searches a month).
@@ -92,7 +92,7 @@ Every alert starts with "For: <name>".
   - Bot token `xoxb-` with scopes `chat:write chat:write.public channels:manage channels:read channels:join`.
   - Create channels with `conversations.create`; post with `chat.postMessage` (channel by name).
   - Links in mrkdwn are `<url|text>`.
-- **Claude API:** headers `x-api-key` and `anthropic-version: 2023-06-01`. Model from `CLAUDE_MODEL`.
+- **Claude API (not used while LLM_PROVIDER=none):** headers `x-api-key` and `anthropic-version: 2023-06-01`. Model from `CLAUDE_MODEL`.
 
 ## The flow
 
@@ -131,12 +131,11 @@ Every alert starts with "For: <name>".
 
 ### Step 3: Company profile, company family and gates
 - **CRM first:** use the CRM's headcount, country, industry and funding stage if all are present **and** fresh (`enriched_at` within 90 days, or field history within 90 days).
-- **Otherwise, ONE Gemini call with search on, temperature 0.** Ask for JSON:
-  `{headcount_min, headcount_max, hq_country, industry, sells_to_businesses, latest_funding_stage, latest_funding_date, parent_company:{name,domain}, subsidiaries:[{name,domain}]}`
-  - Each field comes with a `source_url` and a short quote.
-  - Accept a field only if its source is among the grounding results; otherwise it's "unknown". Never answer from memory.
+- **Otherwise, Apollo organization enrich** (change of 7 Oct 2026: no Gemini in the running engine for now).
+  - Take headcount, HQ country, industry and latest funding stage from Apollo, labelled "Apollo". A missing field is "unknown".
+  - Parent and subsidiaries come from Apollo's fields if present; otherwise skip the family check and log "family: unknown".
   - Cache by domain for 7 days, so reruns give the same answer.
-  - If Gemini errors, times out (20 seconds), or returns unknown for both headcount and country: fall back to **Apollo** company enrich.
+  - If Apollo errors or times out (20 seconds), the facts are "unknown".
   - Write the result back to the CRM with `enriched_at`.
 - **Company family:** look up the parent and each subsidiary domain in the CRM.
   - If one is a customer or has an open deal: route as an **Expansion** lead to that owner (customer → CS channel; open deal → AE channel). Stop.
@@ -184,12 +183,12 @@ Every alert starts with "For: <name>".
 - A lead with 3 or more unknown facts (headcount, country, industry, funding, person) also gets a low-confidence post in the review channel. Its booking still goes ahead.
 
 ### Step 7: Brief
-- **Claude writes it for A and B; Tier C uses a template.** The template is also the fallback if Claude fails.
+- **Template only for now** (change of 7 Oct 2026), filled from the sourced facts, for every tier and for the pre-demo email. An LLM writer can plug in later behind `LLM_PROVIDER`; the template stays the fallback if it fails.
 - **Sections:**
   - **Who:** name, title, time in role, previous companies
   - **LinkedIn:** "pending" until the Clay callback or the fallback arrives
   - **Phone:** "pending", or the number, marked "use for a no-show rescue or follow-up"
-  - **Company:** headcount, HQ, industry and funding, labelled with its source (CRM, Gemini or Apollo)
+  - **Company:** headcount, HQ, industry and funding, labelled with its source (CRM or Apollo)
   - **Why now:** dated links
   - **Likely billing pain:** in a finance leader's words, citing the pricing quote
   - **Customer story:** a rules-based match to Sardine, Vertice, Thriva, Yembo or Pontera; usage-priced companies default to Sardine
@@ -278,7 +277,7 @@ Every alert starts with "For: <name>".
    - `/api/lead` with the Tally parser and signature check, writing to the Airtable log.
    - Setup scripts for Slack, Airtable and HubSpot.
    - The Google token script.
-   - A smoke script with one call each to Gemini (temporal.io and slack.com, showing the raw JSON), Apollo, HubSpot, Airtable, Exa, Firecrawl, Claude, Google and Slack.
+   - A smoke script with one call each to Apollo, HubSpot, Airtable, Exa, Firecrawl, Google and Slack (Gemini or Claude only when LLM_PROVIDER selects one).
    - **Pass:** a real Tally submission lands in Airtable, a test invite and a test Gmail reach my inbox, a test message appears in each Slack channel, and the smoke test passes.
 2. **Steps 1–3 plus scoring and tiers,** with mock connectors.
    - **Pass:** all 15 samples match in DRY_RUN.

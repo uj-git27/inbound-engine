@@ -122,7 +122,11 @@ async function slack() {
   return detail;
 }
 
-const checks = { gemini, apollo, hubspot, airtable, exa, firecrawl, claude, google, slack };
+// Gemini and Claude are only part of the engine when LLM_PROVIDER selects one (default: none).
+const llm = process.env.LLM_PROVIDER ?? 'none';
+const checks = { apollo, hubspot, airtable, exa, firecrawl, google, slack };
+if (llm === 'gemini' || only?.includes('gemini')) checks.gemini = gemini;
+if (llm === 'claude' || only?.includes('claude')) checks.claude = claude;
 let failed = 0;
 const lines = [];
 for (const [name, run] of Object.entries(checks)) {
