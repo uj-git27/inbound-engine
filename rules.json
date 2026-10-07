@@ -1,0 +1,159 @@
+{
+  "disclaimer": "Concept built on public data. Not affiliated with Zenskar.",
+
+  "team": {
+    "ae": { "name": "Alex Morgan", "role": "AE", "channel": "ae-alerts", "gets": "Tier A, open deals" },
+    "sdr": { "name": "Sam Patel", "role": "SDR", "channel": "sdr-inbound", "gets": "Tier B" },
+    "reviewer": { "name": "Jordan Lee", "role": "Human reviewer (SDR manager)", "channel": "inbound-review", "gets": "Tier C, disqualified, low-confidence" },
+    "csm": { "name": "Priya Shah", "role": "CSM", "channel": "cs-alerts", "gets": "Existing customers, expansion leads" },
+    "revops": { "name": "Ravi Iyer", "role": "RevOps", "channel": "revops-engine", "gets": "Errors, rate limits, fail-open, Monday summary" }
+  },
+  "alert_prefix": "For: ",
+
+  "tables": { "leads": "Leads", "cache": "Cache", "crm": "CRM" },
+
+  "form": {
+    "fields": {
+      "name": "full name",
+      "email": "email",
+      "title": "job title",
+      "website": "website",
+      "first_date": "first.*date",
+      "first_time": "first.*time",
+      "backup_date": "backup.*date",
+      "backup_time": "backup.*time",
+      "timezone": "time ?zone"
+    },
+    "required": ["name", "email", "website"],
+    "max_field_length": 300,
+    "thank_you": "Thanks! Your calendar invite will arrive in a few minutes."
+  },
+
+  "demo_aliases": {
+    "jainutsav67+temporal@gmail.com": "temporal.io",
+    "jainutsav67+launchdarkly@gmail.com": "launchdarkly.com",
+    "jainutsav67+customer@gmail.com": "acme-test.com",
+    "jainutsav67+deal@gmail.com": "globex-test.com",
+    "jainutsav67+initech@gmail.com": "initech-test.com",
+    "jainutsav67+sub@gmail.com": "slack.com"
+  },
+
+  "disqualify": {
+    "personal_email_domains": [
+      "gmail.com", "googlemail.com", "yahoo.com", "ymail.com", "hotmail.com", "outlook.com", "live.com", "msn.com",
+      "icloud.com", "me.com", "mac.com", "aol.com", "proton.me", "protonmail.com", "gmx.com", "mail.com",
+      "yandex.com", "zoho.com", "fastmail.com", "hey.com"
+    ],
+    "throwaway_email_domains": [
+      "mailinator.com", "guerrillamail.com", "10minutemail.com", "tempmail.com", "temp-mail.org", "yopmail.com",
+      "sharklasers.com", "trashmail.com", "getnada.com", "dispostable.com", "maildrop.cc", "throwawaymail.com"
+    ],
+    "billing_vendor_domains": [
+      "chargebee.com", "recurly.com", "zuora.com", "stripe.com", "maxio.com", "chargify.com", "saasoptics.com",
+      "metronome.com", "getlago.com", "withorb.com", "m3ter.com", "amberflo.io", "togai.com", "ordwaylabs.com",
+      "paddle.com", "billingplatform.com", "zenskar.com"
+    ],
+    "student_or_job_seeker_titles": [
+      "student", "intern", "graduate", "undergraduate", "phd candidate", "job seeker", "looking for work",
+      "seeking opportunities", "open to work", "unemployed", "researcher at university"
+    ],
+    "not_a_buyer_titles": [
+      "agency", "consultant", "consulting", "recruiter", "recruiting", "talent acquisition", "vendor", "reseller",
+      "investor", "venture partner", "analyst at vc", "journalist", "reporter", "press", "editor"
+    ],
+    "not_a_buyer_label": "not a buyer",
+    "fake_data_patterns": [
+      "^(test|asdf|qwerty|foo|bar|n/?a|none|xxx+|aaa+|abc|123+)$",
+      "^(.)\\1{2,}$"
+    ],
+    "fake_domains": ["example.com", "example.org", "test.com", "domain.com", "email.com", "localhost"],
+    "duplicate_window_days": 30
+  },
+
+  "freshness_days": 90,
+
+  "gates": {
+    "not_a_buyer_industries": ["venture capital", "private equity", "staffing", "recruiting"],
+    "headcount_min": 200,
+    "headcount_max": 2000,
+    "americas_countries": [
+      "united states", "usa", "us", "canada", "mexico", "brazil", "argentina", "chile", "colombia", "peru",
+      "uruguay", "paraguay", "bolivia", "ecuador", "venezuela", "costa rica", "panama", "guatemala", "honduras",
+      "el salvador", "nicaragua", "belize", "dominican republic", "puerto rico", "jamaica", "trinidad and tobago",
+      "bahamas", "barbados", "cuba", "haiti", "guyana", "suriname"
+    ]
+  },
+
+  "signals": {
+    "window_months": 12,
+    "points": {
+      "funding": 10,
+      "new_finance_leader": 10,
+      "ipo_prep": 10,
+      "m_and_a": 8,
+      "revenue_milestone": 6,
+      "international_expansion": 6
+    }
+  },
+
+  "scoring": {
+    "fit": {
+      "max": 35,
+      "industry": {
+        "core": { "points": 20, "keywords": ["software", "saas", "fintech", "ai", "artificial intelligence", "machine learning", "data", "infrastructure", "api", "apis", "payments", "developer tools", "cloud"] },
+        "adjacent": { "points": 12, "keywords": ["health", "healthcare", "logistics", "marketplace", "marketplaces", "telecom", "telecommunications", "media", "insurance", "iot"] },
+        "other_b2b": { "points": 5 }
+      },
+      "funded": 15
+    },
+    "persona": {
+      "max": 30,
+      "finance_leader": 30,
+      "revops_billing_finance_manager": 21,
+      "founder_ceo": 15,
+      "engineering": 9,
+      "other": 3
+    },
+    "billing_model": { "max": 15, "usage": 15, "hybrid": 15, "tiered": 8, "contact_sales": 0, "unknown": 0 },
+    "why_now": { "max": 20 }
+  },
+
+  "tiers": { "A": 60, "B": 40 },
+  "low_confidence_unknowns": 3,
+  "low_confidence_facts": ["headcount", "country", "industry", "funding", "person"],
+
+  "booking": {
+    "slot_timezone": "America/New_York",
+    "slot_label": "ET",
+    "slots": ["10:00", "13:00", "16:00"],
+    "duration_minutes": 30,
+    "min_lead_hours": 2,
+    "search_business_days": 10,
+    "title": "Zenskar concept demo by Utsav",
+    "sdr_title_suffix": " | SDR to take",
+    "buyer_timezones": {
+      "ET": "America/New_York",
+      "CT": "America/Chicago",
+      "MT": "America/Denver",
+      "PT": "America/Los_Angeles",
+      "Other": "America/New_York"
+    }
+  },
+
+  "customer_stories": {
+    "default_usage": "Sardine",
+    "stories": ["Sardine", "Vertice", "Thriva", "Yembo", "Pontera"]
+  },
+
+  "links": { "expiry_hours": 24 },
+
+  "limits": {
+    "external_call_timeout_ms": 20000,
+    "webhook_write_timeout_ms": 8000,
+    "cache_days": 7,
+    "per_domain_per_hour": 3,
+    "paid_runs_per_hour": 40,
+    "phone_wait_seconds": 60,
+    "firecrawl_concurrency": 2
+  }
+}

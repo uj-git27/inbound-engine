@@ -1,0 +1,21 @@
+{
+  "name": "inbound-engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Inbound demo-request engine. Concept built on public data. Not affiliated with Zenskar.",
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "test": "node --test",
+    "smoke": "node scripts/smoke.js",
+    "setup:slack": "node scripts/setup-slack.js",
+    "setup:airtable": "node scripts/setup-airtable.js",
+    "setup:hubspot": "node scripts/setup-hubspot.js",
+    "google-token": "node scripts/google-token.js"
+  },
+  "dependencies": {
+    "@vercel/functions": "^2.0.0"
+  }
+}

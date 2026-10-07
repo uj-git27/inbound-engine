@@ -1,0 +1,33 @@
+{
+  "eventId": "evt_fixture_1",
+  "eventType": "FORM_RESPONSE",
+  "createdAt": "2026-10-07T14:00:00.000Z",
+  "data": {
+    "responseId": "resp_fixture_1",
+    "submissionId": "sub_fixture_1",
+    "respondentId": "rsp_1",
+    "formId": "form_1",
+    "formName": "Book a demo",
+    "createdAt": "2026-10-07T14:00:00.000Z",
+    "fields": [
+      { "key": "q1", "label": "Full name", "type": "INPUT_TEXT", "value": "  Dana Reyes " },
+      { "key": "q2", "label": "Work email", "type": "INPUT_EMAIL", "value": "Dana.Reyes@Temporal.io" },
+      { "key": "q3", "label": "Job title", "type": "INPUT_TEXT", "value": "CFO" },
+      { "key": "q4", "label": "Company website", "type": "INPUT_LINK", "value": "https://www.Temporal.io/pricing?x=1" },
+      { "key": "q5", "label": "First choice date", "type": "INPUT_DATE", "value": "2026-10-14" },
+      {
+        "key": "q6", "label": "First choice time", "type": "DROPDOWN", "value": ["opt_1pm"],
+        "options": [{ "id": "opt_10am", "text": "10am ET" }, { "id": "opt_1pm", "text": "1pm ET" }, { "id": "opt_4pm", "text": "4pm ET" }]
+      },
+      { "key": "q7", "label": "Backup date", "type": "INPUT_DATE", "value": "2026-10-15" },
+      {
+        "key": "q8", "label": "Backup time", "type": "DROPDOWN", "value": ["opt_4pm"],
+        "options": [{ "id": "opt_10am", "text": "10am ET" }, { "id": "opt_1pm", "text": "1pm ET" }, { "id": "opt_4pm", "text": "4pm ET" }]
+      },
+      {
+        "key": "q9", "label": "Time zone", "type": "DROPDOWN", "value": ["tz_pt"],
+        "options": [{ "id": "tz_et", "text": "ET" }, { "id": "tz_ct", "text": "CT" }, { "id": "tz_mt", "text": "MT" }, { "id": "tz_pt", "text": "PT" }, { "id": "tz_other", "text": "Other" }]
+      }
+    ]
+  }
+}
