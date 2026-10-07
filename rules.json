@@ -179,6 +179,9 @@
     "duplicate_window_days": 30
   },
   "freshness_days": 90,
+  "person_providers": [
+    "exa"
+  ],
   "gates": {
     "not_a_buyer_industries": [
       "venture capital",

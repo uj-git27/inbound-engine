@@ -445,3 +445,19 @@ test('calendar feed: UTC, zoned and all-day events are busy; cancelled and "free
     { start: '2026-10-22T04:00:00.000Z', end: '2026-10-23T04:00:00.000Z' },
   ]);
 });
+
+test('Exa person match: exact name and the company in the profile text, or unknown', async () => {
+  const { personFromExa } = await import('../lib/signals.js');
+  const results = [
+    { title: 'Sara Schempp', url: 'https://linkedin.com/in/sara-schempp', highlights: ['### GTM Enablement Manager - [Temporal Technologies](https://www.linkedin.com/company/temporal-technologies) (Current)'] },
+    { title: 'Samar Abbas', url: 'https://linkedin.com/in/samar-abbas-other', highlights: ['# Samar Abbas', 'Engineer. Builder. Optimizer of intelligent systems.'] },
+    { title: 'Sam Ingbar', url: 'https://example.com/sam', highlights: ['Solutions @ Temporal'] },
+  ];
+  const companies = ['Temporal Technologies', 'temporal'];
+  assert.deepEqual(personFromExa(results, { name: 'Sara Schempp', companies }), {
+    linkedin: 'https://linkedin.com/in/sara-schempp', title: 'GTM Enablement Manager', role_start: null, previous_companies: [], source: 'Exa',
+  });
+  assert.equal(personFromExa(results, { name: 'Samar Abbas', companies }), null, 'same name at another company must not match');
+  assert.equal(personFromExa(results, { name: 'Sam Ingbar', companies }), null, 'not a LinkedIn profile');
+  assert.equal(personFromExa(results, { name: 'Sara', companies }), null, 'a single name is too weak to match');
+});
