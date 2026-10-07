@@ -1,6 +1,8 @@
 # Runs the engine's timed rules every hour: the Tier B reminder (24 hours before), the Tier B
 # release (4 hours before) and the 4-hour nurture default. Vercel's free plan only allows a daily
 # schedule, so this hourly call fills the gap.
+# To enable: copy this file to .github/workflows/sweep.yml and push it (the GitHub login needs the
+# "workflow" permission: gh auth refresh -s workflow).
 # Needs one repository secret, SWEEP_URL: the full /api/sweep URL including its ?t= token.
 name: Timed rules
 on:

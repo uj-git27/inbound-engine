@@ -236,6 +236,27 @@ Every alert starts with "For: <name>".
 - **CRM:** upsert the company (score, tier, reasons, signal links, parent domain, funding stage, enriched_at) and the contact.
 - **Airtable:** decision, reason, route, owner, flags, paid calls plus detail, slot, event link, brief, drafts, evidence JSON, notes, timeline, rep verdict, reviewer actions, phone, LinkedIn, error.
 
+## Email rules (change of 8 Oct 2026; these replace the email parts of step 8)
+- **Templates only.** Every email is a fixed template in `rules.json` (no AI writing), each with `approved_by` and `approved_at`. Personal details come only from sourced facts.
+- **Sender.** Sent from my Gmail. Display name: the AE (Alex Morgan) for Tier A and B emails; the team name for rejections and nurture. Reply-to is that person's email from `rules.json`. The AE is BCC'd on every Tier A and B email. Every email ends with the footer.
+- **DEMO_MODE** sends everything to `DEMO_INBOX`. Every send is logged in Airtable (template, to, from, time). The same template is never sent twice to a lead.
+- **Tier A:** right after booking, `tier_a_confirm` goes out automatically from the AE, and "Confirmation sent" is posted in the alert's thread. No SDR step, no approval step.
+- **Tier B:** only the invite goes out at booking. The SDR's alert has two actions:
+  - "Confirm meeting" sends `tier_b_confirm` from the AE and posts "Confirmed by {SDR}" in #ae-alerts.
+  - "Not qualified" cancels the event and sends `tier_b_release`.
+  - Not confirmed 24 hours before the meeting: reminder in #sdr-inbound. Still not confirmed 4 hours before: `tier_b_release` is sent, the event is cancelled, and #sdr-inbound is told.
+- **Slam-dunk rejections** (based only on what the lead typed) send automatically:
+  - personal or throwaway email → `reject_personal_email`
+  - competitor, student or job seeker, fake data → `reject_generic`
+  - agency, recruiter, consultant, vendor → `reject_vendor`
+  - investor or press → `not_a_buyer`
+  - duplicate within 30 days → no email
+- **Tier C, and rejections based on looked-up data** (headcount, region, B2B): no email until Jordan Lee acts in #inbound-review.
+  - "Approve rejection" sends `reject_generic`. "Send to SDR" sends and books nothing. "Nurture" sends `nurture_tour`.
+  - Untouched for 4 hours: defaults to "Nurture".
+- **Timers** run from `/api/sweep`: on every new lead, once a day from Vercel's scheduler, and hourly if the GitHub workflow in `scripts/github-sweep-workflow.yml` is enabled.
+- **Slack actions** are buttons with a confirm step when `SLACK_SIGNING_SECRET` is set (handled by `/api/slack-actions`); otherwise they are signed links.
+
 ## Guard rails
 - **Cheapest checks first.** Nothing paid runs for a lead an earlier step settled.
 - **Fail open.** If an unexpected error happens after the free checks, book the meeting anyway, post "Engine error" to #revops-engine "For: Ravi Iyer", and log it.
