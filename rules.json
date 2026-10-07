@@ -186,6 +186,7 @@
     ],
     "duplicate_window_days": 30
   },
+  "demo_alias_mailbox": "jainutsav67@gmail.com",
   "freshness_days": 90,
   "person_providers": [
     "exa"

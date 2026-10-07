@@ -114,6 +114,20 @@ test('a disqualified lead marked "Wrong: A" is rescued to the AE', async () => {
   assert.deepEqual(sent(c), ['tier_a_confirm']);
 });
 
+test('general alias: you+<company domain>@gmail.com stands in for that company', async () => {
+  const { aliasDomain } = await import('../lib/pipeline.js');
+  assert.equal(aliasDomain('jainutsav67+newrelic.com@gmail.com'), 'newrelic.com');
+  assert.equal(aliasDomain('jainutsav67+launchdarkly.com@gmail.com'), 'launchdarkly.com');
+  assert.equal(aliasDomain('jainutsav67+newrelic@gmail.com'), null, 'needs a full domain');
+  assert.equal(aliasDomain('someoneelse+newrelic.com@gmail.com'), null, 'only the configured mailbox');
+  assert.equal(aliasDomain('jainutsav67@gmail.com'), null);
+  const c = getConnectors();
+  const lead = { id: 'general-alias', name: 'Morgan Blake', email: 'jainutsav67+launchdarkly.com@gmail.com', title: 'Head of Revenue Operations', company: 'LaunchDarkly', expect: { outcome: 'A', channel: 'ae-alerts' } };
+  const { problems } = await runSample(lead, c);
+  assert.deepEqual(problems, []);
+  assert.match(c.slack.posts[0].text, /`DEMO`/);
+});
+
 test('"Right tier" only records the verdict and moves nothing', async () => {
   const c = getConnectors();
   await runSample(sample('04'), c);
