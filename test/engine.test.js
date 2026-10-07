@@ -1,6 +1,6 @@
 import { test, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { samples, samplePayload, runSample } from '../lib/samples.js';
+import { samples, samplePayload, runSample, sampleDate } from '../lib/samples.js';
 import { getConnectors, resetMocks } from '../lib/connectors/index.js';
 import { runPipeline } from '../lib/pipeline.js';
 import { runAction } from '../lib/actions.js';
@@ -24,7 +24,9 @@ const act = (c, id, action) => runAction({ leadId: `sample-${sample(id).id}`, ac
 beforeEach(() => {
   process.env.DRY_RUN = 'true';
   process.env.BASE_URL = 'https://engine.example';
+  process.env.TALLY_FORM_URL = 'https://form.example/demo';
   delete process.env.TALLY_SIGNING_SECRET;
+  delete process.env.SLACK_SIGNING_SECRET;
   delete process.env.DEMO_MODE;
   resetMocks();
 });
@@ -123,7 +125,7 @@ test('person and story helpers', () => {
 
 // ---------- routing, booking and the brief ----------
 
-test('Tier A: booked, brief in #ae-alerts for Alex Morgan, email drafted but not sent', async () => {
+test('Tier A: booked, brief in #ae-alerts for Alex Morgan, confirmation email sent automatically', async () => {
   const c = getConnectors();
   await runSample(sample('01'), c);
   const [post] = c.slack.posts;
@@ -134,14 +136,17 @@ test('Tier A: booked, brief in #ae-alerts for Alex Morgan, email drafted but not
   }
   assert.match(post.text, /source: Apollo/);
   assert.match(post.text, /\$50 per million Actions/);
-  assert.match(post.text, /Approve email>/);
+  assert.equal(/Actions:/.test(post.text), false, 'Tier A has no SDR step and no approval step');
   assert.match(post.text, /Right tier>.*Wrong: .*\|A> \/ .*\|B> \/ .*\|C>/);
   assert.equal(c.google.events.length, 1);
   assert.equal(c.google.events[0].summary, rules.booking.title);
-  assert.equal(c.google.emails.length, 0);
+  // The confirmation goes out automatically, and the thread says so.
+  assert.deepEqual(c.google.emails.map((e) => e.template), ['tier_a_confirm']);
+  assert.equal(c.slack.posts[1].thread_ts, post.ts);
+  assert.match(c.slack.posts[1].text, /^Confirmation sent to jainutsav67\+temporal@gmail\.com/);
   const fields = row(c, '01').fields;
-  assert.equal(fields.slot, '2026-10-20 10:00 ET');
-  assert.ok(JSON.parse(fields.drafts).pre_demo.subject);
+  assert.equal(fields.slot, `${sampleDate()} 10:00 ET`);
+  assert.match(fields.emails_log, /\| tier_a_confirm \| to jainutsav67\+temporal@gmail\.com \| from Alex Morgan \| reply-to jainutsav67\+alex@gmail\.com \| bcc jainutsav67\+alex@gmail\.com$/);
   assert.equal(c.crm.rows.get('temporal.io').tier, 'A');
   assert.equal(c.crm.contacts.get('jainutsav67+temporal@gmail.com').tier, 'A');
 });
@@ -152,8 +157,9 @@ test('Tier B: booked with "| SDR to take", brief in #sdr-inbound, then a contact
   assert.equal(c.google.events[0].summary, `${rules.booking.title} | SDR to take`);
   assert.equal(c.slack.posts[0].channel, 'sdr-inbound');
   assert.match(c.slack.posts[0].text, /^For: Sam Patel\n/);
-  assert.match(c.slack.posts[0].text, /Promote to AE>/);
+  assert.match(c.slack.posts[0].text, /Confirm meeting>.*Not qualified>/);
   assert.match(c.slack.posts[0].text, /\*Phone:\* pending/);
+  assert.equal(c.google.emails.length, 0, 'Tier B sends nothing until "Confirm meeting"');
   assert.equal(c.slack.posts[1].channel, 'sdr-inbound');
   assert.match(c.slack.posts[1].text, /Contact lookup finished/);
   assert.match(row(c, '03').fields.paid_calls_detail, /fullenrich_phone/);
@@ -166,7 +172,8 @@ test('Tier C and disqualified: no booking, review links only', async () => {
   assert.equal(c.google.events.length, 0);
   assert.match(c.slack.posts[0].text, /Send to SDR>.*Nurture>.*Approve rejection>.*Find contact>/);
   assert.match(c.slack.posts[1].text, /^For: Jordan Lee\n\*Disqualified: personal email\*/);
-  assert.match(c.slack.posts[1].text, /Approve rejection>.*Confirm meeting anyway>/);
+  assert.match(c.slack.posts[1].text, /The "reject_personal_email" email was sent automatically/);
+  assert.match(c.slack.posts[1].text, /Actions: <[^|]+\|Confirm meeting anyway>\n/);
 });
 
 test('DEMO_MODE: the invite goes to DEMO_INBOX and aliases skip the person and phone lookups', async () => {
@@ -176,8 +183,10 @@ test('DEMO_MODE: the invite goes to DEMO_INBOX and aliases skip the person and p
   const { got } = await runSample(sample('01'), c);
   assert.deepEqual(c.google.events[0].attendees, [{ email: 'demo@inbox.example' }]);
   assert.equal(got.calls.includes('apollo_person'), false);
-  assert.equal(c.slack.posts.length, 1);
+  assert.equal(c.slack.posts.length, 2, 'the brief and its "Confirmation sent" thread reply, no contact follow-up');
   assert.equal(c.clay.rows.length, 0);
+  // Every email goes to DEMO_INBOX, with no BCC.
+  assert.deepEqual(c.google.emails.map((e) => [e.to, e.bcc]), [['demo@inbox.example', null]]);
 });
 
 test('expansion still works on a rerun, when the company data now comes from the CRM', async () => {
@@ -210,7 +219,7 @@ test('a duplicate is skipped but RevOps is told', async () => {
 // ---------- signed links and actions ----------
 
 test('links: valid for 24 hours, tied to the lead and the action', () => {
-  const url = new URL(actionUrl('lead-1', 'approve_email'));
+  const url = new URL(actionUrl('lead-1', 'nurture'));
   const q = Object.fromEntries(url.searchParams);
   assert.equal(verifyAction(q).ok, true);
   assert.equal(verifyAction({ ...q, a: 'send_sdr' }).ok, false);
@@ -221,50 +230,83 @@ test('links: valid for 24 hours, tied to the lead and the action', () => {
 
 test('action page: GET only shows a confirm button; POST runs the action once', async () => {
   const c = getConnectors();
-  await runSample(sample('01'), c);
-  const url = actionUrl(`sample-${sample('01').id}`, 'approve_email');
+  await runSample(sample('04'), c);
+  const url = actionUrl(`sample-${sample('04').id}`, 'nurture');
   const page = await actionGet(new Request(url));
   assert.equal(page.status, 200);
   assert.match(await page.text(), /<form method="post">/);
   assert.equal(c.google.emails.length, 0);
   const first = await actionPost(new Request(url, { method: 'POST' }));
-  assert.match(await first.text(), /Email sent to jainutsav67\+temporal@gmail\.com/);
+  assert.match(await first.text(), /The &quot;nurture_tour&quot; email was sent to pat@brightpath-hr\.com/);
   assert.equal(c.google.emails.length, 1);
   const again = await actionPost(new Request(url, { method: 'POST' }));
   assert.match(await again.text(), /already done/);
   assert.equal(c.google.emails.length, 1);
-  assert.equal((await actionGet(new Request(url.replace('approve_email', 'send_sdr')))).status, 400);
+  assert.equal((await actionGet(new Request(url.replace('a=nurture', 'a=send_sdr')))).status, 400);
 });
 
-test('Promote to AE renames the event and posts the brief to #ae-alerts', async () => {
+test('Tier B: "Confirm meeting" sends tier_b_confirm from the AE and tells #ae-alerts', async () => {
   const c = getConnectors();
   await runSample(sample('03'), c);
-  const result = await act(c, '03', 'promote_ae');
+  assert.equal(c.google.emails.length, 0);
+  const result = await act(c, '03', 'confirm_meeting');
   assert.equal(result.ok, true);
   assert.equal(c.google.events[0].summary, rules.booking.title);
+  const [email] = c.google.emails;
+  assert.equal(email.template, 'tier_b_confirm');
+  assert.equal(email.fromName, 'Alex Morgan');
+  assert.match(email.text, /Thanks for the conversation with Sam Patel\./);
   assert.equal(c.slack.posts.at(-1).channel, 'ae-alerts');
-  assert.match(c.slack.posts.at(-1).text, /^For: Alex Morgan\n/);
+  assert.match(c.slack.posts.at(-1).text, /^For: Alex Morgan\nConfirmed by Sam Patel: Sofia Marin at Northwind Freight/);
 });
 
-test('Tier C reviewer actions: send to SDR books; nurture tags the CRM and sends no email', async () => {
+test('Tier B: "Not qualified" cancels the event and sends tier_b_release', async () => {
+  const c = getConnectors();
+  await runSample(sample('03'), c);
+  assert.equal(c.google.events.length, 1);
+  const result = await act(c, '03', 'not_qualified');
+  assert.equal(result.ok, true);
+  assert.equal(c.google.events.length, 0);
+  assert.equal(c.google.cancelled.length, 1);
+  assert.deepEqual(c.google.emails.map((e) => e.template), ['tier_b_release']);
+  assert.match(c.google.emails[0].text, /Grab time here if useful later: https:\/\/form\.example\/demo/);
+  assert.equal(row(c, '03').fields.slot, '');
+  assert.equal(c.slack.posts.at(-1).channel, 'sdr-inbound');
+  // A cancelled meeting cannot then be confirmed by mistake into a second email of the same kind.
+  assert.match((await act(c, '03', 'not_qualified')).message, /already done/);
+});
+
+test('Tier C reviewer actions: nurture sends nurture_tour; send to SDR sends and books nothing', async () => {
+  const c = getConnectors();
+  await runSample(sample('04'), c);
+  assert.equal(c.google.emails.length, 0, 'no email until Jordan acts');
+  assert.equal((await act(c, '04', 'send_sdr')).ok, true);
+  assert.equal(c.google.emails.length, 0);
+  assert.equal(c.google.events.length, 0);
+  assert.equal(c.slack.posts.at(-1).channel, 'sdr-inbound');
+  assert.match(c.slack.posts.at(-1).text, /follow up by email, LinkedIn or call/);
+  // The SDR can then confirm: that books the meeting and sends the confirmation.
+  assert.equal((await act(c, '04', 'confirm_meeting')).ok, true);
+  assert.equal(c.google.events.length, 1);
+  assert.deepEqual(c.google.emails.map((e) => e.template), ['tier_b_confirm']);
+  assert.match(row(c, '04').fields.reviewer_actions, /send_sdr\n.* confirm_meeting$/);
+});
+
+test('Tier C: "Nurture" tags the CRM and sends nurture_tour; "Approve rejection" sends reject_generic', async () => {
   const c = getConnectors();
   await runSample(sample('04'), c);
   assert.equal((await act(c, '04', 'nurture')).ok, true);
   assert.equal(c.crm.rows.get('brightpath-hr.com').nurture, true);
-  assert.equal(c.google.emails.length, 0);
-  assert.equal((await act(c, '04', 'send_sdr')).ok, true);
-  assert.equal(c.google.events[0].summary, `${rules.booking.title} | SDR to take`);
-  assert.equal(c.slack.posts.at(-1).channel, 'sdr-inbound');
-  assert.match(row(c, '04').fields.reviewer_actions, /nurture\n.* send_sdr$/);
+  await runSample(sample('15'), c);
+  assert.equal((await act(c, '15', 'approve_rejection')).ok, true);
+  assert.deepEqual(c.google.emails.map((e) => [e.template, e.fromName]), [['nurture_tour', 'Utsav (concept demo)'], ['reject_generic', 'Utsav (concept demo)']]);
 });
 
-test('disqualified: the rejection email is sent only after approval; "confirm anyway" books', async () => {
+test('slam-dunk rejection: the email goes out by itself; "confirm anyway" still books', async () => {
   const c = getConnectors();
   await runSample(sample('06'), c);
-  assert.equal(c.google.emails.length, 0);
-  await act(c, '06', 'approve_rejection');
-  assert.equal(c.google.emails.length, 1);
-  assert.match(c.google.emails[0].text, new RegExp(rules.emails.product_tour_url.replace(/[.]/g, '\\.')));
+  assert.deepEqual(c.google.emails.map((e) => e.template), ['reject_generic']);
+  assert.ok(c.google.emails[0].text.includes(rules.emails.productTourUrl));
   await act(c, '06', 'confirm_anyway');
   assert.equal(c.google.events.length, 1);
 });

@@ -3,30 +3,35 @@
   "team": {
     "ae": {
       "name": "Alex Morgan",
+      "email": "jainutsav67+alex@gmail.com",
       "role": "AE",
       "channel": "ae-alerts",
       "gets": "Tier A, open deals"
     },
     "sdr": {
       "name": "Sam Patel",
+      "email": "jainutsav67+sam@gmail.com",
       "role": "SDR",
       "channel": "sdr-inbound",
       "gets": "Tier B"
     },
     "reviewer": {
       "name": "Jordan Lee",
+      "email": "jainutsav67+jordan@gmail.com",
       "role": "Human reviewer (SDR manager)",
       "channel": "inbound-review",
       "gets": "Tier C, disqualified, low-confidence"
     },
     "csm": {
       "name": "Priya Shah",
+      "email": "jainutsav67+priya@gmail.com",
       "role": "CSM",
       "channel": "cs-alerts",
       "gets": "Existing customers, expansion leads"
     },
     "revops": {
       "name": "Ravi Iyer",
+      "email": "jainutsav67+ravi@gmail.com",
       "role": "RevOps",
       "channel": "revops-engine",
       "gets": "Errors, rate limits, fail-open, Monday summary"
@@ -146,7 +151,7 @@
       "unemployed",
       "researcher at university"
     ],
-    "not_a_buyer_titles": [
+    "vendor_titles": [
       "agency",
       "consultant",
       "consulting",
@@ -154,7 +159,9 @@
       "recruiting",
       "talent acquisition",
       "vendor",
-      "reseller",
+      "reseller"
+    ],
+    "investor_press_titles": [
       "investor",
       "venture partner",
       "analyst at vc",
@@ -558,12 +565,139 @@
     }
   },
   "emails": {
-    "sender_name": "Utsav",
-    "product_tour_url": "https://example.com/product-tour"
+    "brand": "finance automation",
+    "team_display_name": "Utsav (concept demo)",
+    "team_reply_to": "jainutsav67@gmail.com",
+    "footer": "Concept demo by Utsav, built on public data. Not affiliated with any real company.",
+    "productTourUrl": "https://www.zenskar.com/product-tour",
+    "bcc_ae_on": ["tier_a_confirm", "tier_b_confirm", "tier_b_release"],
+    "signal_labels": {
+      "funding": "funding round",
+      "m_and_a": "acquisition",
+      "revenue_milestone": "revenue milestone",
+      "international_expansion": "expansion",
+      "new_finance_leader": "new finance leadership appointment"
+    },
+    "auto_rejections": {
+      "personal_email": "reject_personal_email",
+      "generic": "reject_generic",
+      "vendor": "reject_vendor",
+      "investor_press": "not_a_buyer"
+    },
+    "untouched_hours_before_nurture": 4,
+    "tier_b_reminder_hours": 24,
+    "tier_b_release_hours": 4,
+    "templates": {
+      "tier_a_confirm": {
+        "from": "ae",
+        "approved_by": "Utsav",
+        "approved_at": "2026-10-08",
+        "subject": "Your {brand} demo on {meeting_time}",
+        "body": [
+          "Hi {first_name},",
+          "Thanks for booking a demo with us. You're confirmed for {meeting_time}.",
+          "{signal_line}",
+          "Here are the 3 things we'll cover:\n{topics}",
+          "Optional pre-reading, if you'd like a head start, is our product tour: {tour_url}",
+          "The calendar invite has already been sent to this address.",
+          "{sender_name}"
+        ]
+      },
+      "tier_b_confirm": {
+        "from": "ae",
+        "approved_by": "Utsav",
+        "approved_at": "2026-10-08",
+        "subject": "Your {brand} demo on {meeting_time}",
+        "body": [
+          "Hi {first_name},",
+          "Thanks for the conversation with {sdr_name}. You're confirmed for {meeting_time}.",
+          "{signal_line}",
+          "Here are the 3 things we'll cover:\n{topics}",
+          "Optional pre-reading, if you'd like a head start, is our product tour: {tour_url}",
+          "The calendar invite has already been sent to this address.",
+          "{sender_name}"
+        ]
+      },
+      "tier_b_release": {
+        "from": "ae",
+        "approved_by": "Utsav",
+        "approved_at": "2026-10-08",
+        "subject": "About your demo request",
+        "body": [
+          "Hi {first_name},",
+          "Thank you for your interest. We've released the time we were holding for a demo, so there is nothing on your calendar from us.",
+          "You can see the product at your own pace here: {tour_url}",
+          "Grab time here if useful later: {form_url}",
+          "{sender_name}"
+        ]
+      },
+      "reject_personal_email": {
+        "from": "team",
+        "approved_by": "Utsav",
+        "approved_at": "2026-10-08",
+        "subject": "About your demo request",
+        "body": [
+          "Hi {first_name},",
+          "Thanks for your interest in a demo.",
+          "Please rebook with your work email so we can prepare properly: {form_url}",
+          "In the meantime, here is the product tour: {tour_url}",
+          "{sender_name}"
+        ]
+      },
+      "reject_generic": {
+        "from": "team",
+        "approved_by": "Utsav",
+        "approved_at": "2026-10-08",
+        "subject": "About your demo request",
+        "body": [
+          "Hi {first_name},",
+          "Thanks for your interest in a demo.",
+          "From what you shared, a live demo isn't the best fit right now.",
+          "You can see the product at your own pace here: {tour_url}",
+          "{sender_name}"
+        ]
+      },
+      "reject_vendor": {
+        "from": "team",
+        "approved_by": "Utsav",
+        "approved_at": "2026-10-08",
+        "subject": "About your demo request",
+        "body": [
+          "Hi {first_name},",
+          "Thanks for reaching out.",
+          "We're not looking for services right now, so we haven't booked a demo.",
+          "{sender_name}"
+        ]
+      },
+      "not_a_buyer": {
+        "from": "team",
+        "approved_by": "Utsav",
+        "approved_at": "2026-10-08",
+        "subject": "About your demo request",
+        "body": [
+          "Hi {first_name},",
+          "Thanks for reaching out.",
+          "For partnerships or press, reply to this email and we'll route it.",
+          "{sender_name}"
+        ]
+      },
+      "nurture_tour": {
+        "from": "team",
+        "approved_by": "Utsav",
+        "approved_at": "2026-10-08",
+        "subject": "About your demo request",
+        "body": [
+          "Hi {first_name},",
+          "Thanks for your interest in a demo.",
+          "The best place to start is the product tour: {tour_url}",
+          "Grab time here if helpful: {form_url}",
+          "{sender_name}"
+        ]
+      }
+    }
   },
   "review_override_actions": [
     "send_sdr",
-    "confirm_anyway",
-    "promote_ae"
+    "confirm_anyway"
   ]
 }

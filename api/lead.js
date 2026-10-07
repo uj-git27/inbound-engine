@@ -4,6 +4,7 @@ import { verifyTallySignature, leadIdOf } from '../lib/tally.js';
 import { getConnectors } from '../lib/connectors/index.js';
 import { runPipeline } from '../lib/pipeline.js';
 import { runInBackground } from '../lib/background.js';
+import { sweep } from '../lib/sweep.js';
 
 const reply = (status, body) => Response.json(body, { status });
 
@@ -53,9 +54,11 @@ export async function POST(request) {
   }
 
   runInBackground(
-    runPipeline({ recordId: record.id, payload, connectors }).catch((err) => {
-      console.error('lead: pipeline failed:', err.message);
-    }),
+    runPipeline({ recordId: record.id, payload, connectors })
+      .catch((err) => console.error('lead: pipeline failed:', err.message))
+      // Every new lead is also a chance to run the timed rules, on top of the scheduled runs.
+      .then(() => sweep({ connectors }))
+      .catch((err) => console.error('lead: sweep failed:', err.message)),
   );
   return reply(200, { ok: true, id: record.id });
 }

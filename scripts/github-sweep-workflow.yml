@@ -1,0 +1,20 @@
+# Runs the engine's timed rules every hour: the Tier B reminder (24 hours before), the Tier B
+# release (4 hours before) and the 4-hour nurture default. Vercel's free plan only allows a daily
+# schedule, so this hourly call fills the gap.
+# Needs one repository secret, SWEEP_URL: the full /api/sweep URL including its ?t= token.
+name: Timed rules
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Call the sweep endpoint
+        env:
+          SWEEP_URL: ${{ secrets.SWEEP_URL }}
+        run: |
+          if [ -z "$SWEEP_URL" ]; then echo "SWEEP_URL secret is not set"; exit 1; fi
+          curl --fail --silent --show-error --max-time 240 "$SWEEP_URL"
