@@ -83,9 +83,9 @@ Every alert starts with "For: <name>".
   - `/v2/map` with `search: "pricing"` finds the pricing page.
   - **Max 2 requests at a time** on the free plan.
 - **FullEnrich:** `POST /api/v2/contact/enrich/bulk` with `enrich_fields: ["contact.phones"]`, then poll `GET .../bulk/{id}`. The phone is at `data[0].contact_info.most_probable_phone.number`.
-- **Calendar and email without Google Cloud (change of 7 Oct 2026):** Gmail with an app password.
-  - Env: `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `GCAL_ICAL_URL`.
-  - Emails go through Gmail's mail server (smtp.gmail.com, port 465).
+- **Calendar and email without Google Cloud (change of 7 Oct 2026):** a mailbox with an app password (Zoho; Gmail also works).
+  - Env: `SMTP_HOST`, `SMTP_USER`, `SMTP_APP_PASSWORD`, `CALENDAR_ICAL_URL`.
+  - Emails go through the mailbox's own mail server (for example smtp.zoho.in, port 465).
   - The invite is a calendar invitation (.ics, `METHOD:REQUEST`) sent by email; an update re-sends it with the same UID.
   - Free/busy: the calendar's secret iCal address, plus the slots the engine has already booked (from Airtable).
   - The Google API route below is still supported and is used when `GOOGLE_REFRESH_TOKEN` is set.

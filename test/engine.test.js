@@ -408,7 +408,7 @@ test('Monday summary: leads by tier, reviewer overrides and wrong-tier verdicts'
 // ---------- Gmail app-password route (no Google Cloud) ----------
 
 test('invite email: a calendar invitation that mail clients recognise', async () => {
-  const { buildIcs, buildMime, parseIcsBusy } = await import('../lib/connectors/gmail-smtp.js');
+  const { buildIcs, buildMime, parseIcsBusy } = await import('../lib/connectors/mail-calendar.js');
   const ics = buildIcs({
     uid: 'u1@inbound-engine', summary: 'Demo; with, punctuation', description: 'Line one\nLine two',
     start: '2026-10-20T14:00:00.000Z', end: '2026-10-20T14:30:00.000Z', organizer: 'me@gmail.com', attendees: ['buyer@acme.com'],
@@ -429,7 +429,7 @@ test('invite email: a calendar invitation that mail clients recognise', async ()
 });
 
 test('calendar feed: UTC, zoned and all-day events are busy; cancelled and "free" ones are not', async () => {
-  const { parseIcsBusy } = await import('../lib/connectors/gmail-smtp.js');
+  const { parseIcsBusy } = await import('../lib/connectors/mail-calendar.js');
   const feed = [
     'BEGIN:VCALENDAR',
     'BEGIN:VEVENT', 'DTSTART:20261020T140000Z', 'DTEND:20261020T150000Z', 'SUMMARY:UTC meeting', 'END:VEVENT',
