@@ -33,6 +33,15 @@ const rejected = await seed('05');
 
 createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
+  // /frame?w=390&u=/book?... shows a page inside a frame of an exact width. Headless browsers
+  // cannot make their window narrower than about 500px, so this is how phone-width shots are taken.
+  if (url.pathname === '/frame') {
+    const width = Number(url.searchParams.get('w')) || 390;
+    const target = String(url.searchParams.get('u') ?? '').replace(/"/g, '');
+    res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
+    res.end(`<!doctype html><body style="margin:0;background:#888"><iframe src="${target.startsWith('/') ? target : '/'}" width="${width}" height="844" style="border:0;display:block"></iframe></body>`);
+    return;
+  }
   const handler = routes[`${req.method} ${url.pathname}`];
   if (!handler) {
     res.writeHead(404).end('not found');
