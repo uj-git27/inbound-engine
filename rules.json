@@ -410,7 +410,7 @@
     "duration_minutes": 30,
     "min_lead_hours": 2,
     "search_business_days": 10,
-    "title": "Finance automation concept demo by Utsav",
+    "title": "Zenskar concept demo by Utsav",
     "sdr_title_suffix": " | SDR to take",
     "buyer_timezones": {
       "ET": "America/New_York",
@@ -565,10 +565,10 @@
     }
   },
   "emails": {
-    "brand": "finance automation",
-    "team_display_name": "Utsav (concept demo)",
+    "brand": "Zenskar",
+    "team_display_name": "Utsav (Zenskar concept demo)",
     "team_reply_to": "jainutsav67@gmail.com",
-    "footer": "Concept demo by Utsav, built on public data. Not affiliated with any real company.",
+    "footer": "Concept demo by Utsav, built on public data. Not affiliated with Zenskar.",
     "productTourUrl": "https://www.zenskar.com/product-tour",
     "bcc_ae_on": ["tier_a_confirm", "tier_b_confirm", "tier_b_release"],
     "signal_labels": {

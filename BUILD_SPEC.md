@@ -208,7 +208,7 @@ Every alert starts with "For: <name>".
 - **Booking rule:**
   - Check free/busy. Book the preferred slot if it's free, else the next free weekday slot (10am, 1pm or 4pm ET, within 10 business days).
   - A weekend, past or less-than-2-hours-away slot rolls forward.
-  - The invite is 30 minutes long, titled "Finance automation concept demo by Utsav", with `sendUpdates=all`.
+  - The invite is 30 minutes long, titled "Zenskar concept demo by Utsav" (buyer-facing emails and the invite name the product; the form does not), with `sendUpdates=all`.
   - The description gives the buyer's local time, any slot change, and the disclaimer.
 - **Tier A:** book, post the brief to #ae-alerts "For: Alex Morgan", and draft a pre-demo email. It's sent through Gmail **only after** a signed "Approve email" click.
 - **Tier B:** book with "| SDR to take" in the title, and post the brief to #sdr-inbound "For: Sam Patel". Include a signed "Promote to AE" link that renames the event and posts to #ae-alerts.
@@ -218,7 +218,10 @@ Every alert starts with "For: <name>".
   - Approve rejection
   - Find contact
 - **Disqualified:** no booking. Post the reason to #inbound-review "For: Jordan Lee" with "Approve rejection" and "Confirm meeting anyway". The rejection email (with a product tour link) is sent only after approval.
-- **Every alert** has "Right tier" and "Wrong: A / B / C" links. The verdict is written to Airtable and the CRM.
+- **Tier verdict** (change of 8 Oct 2026): tier and disqualified alerts have "Right tier" and "Wrong: A / B / C". Customer, open-deal and expansion alerts have no tier, so they have no verdict. The verdict is written to Airtable and the CRM, and a "Wrong" verdict also moves the lead to the owner of the tier chosen:
+  - to A: booked on the AE's calendar, `tier_a_confirm` sent, brief posted in #ae-alerts
+  - to B: booked for the SDR, brief posted in #sdr-inbound with "Confirm meeting" and "Not qualified"
+  - to C: back to #inbound-review; a meeting already booked stays until the reviewer decides, and "Nurture" or "Approve rejection" cancels it
 - **Signed links:**
   - HMAC with `LINK_SECRET`, expiring after 24 hours.
   - GET shows a confirm page; only the POST from the button runs the action.

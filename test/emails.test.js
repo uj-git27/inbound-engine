@@ -84,11 +84,11 @@ test('sender display name, reply-to and BCC are right for every template', () =>
     tier_a_confirm: ['Alex Morgan', 'jainutsav67+alex@gmail.com', 'jainutsav67+alex@gmail.com'],
     tier_b_confirm: ['Alex Morgan', 'jainutsav67+alex@gmail.com', 'jainutsav67+alex@gmail.com'],
     tier_b_release: ['Alex Morgan', 'jainutsav67+alex@gmail.com', 'jainutsav67+alex@gmail.com'],
-    reject_personal_email: ['Utsav (concept demo)', 'jainutsav67@gmail.com', null],
-    reject_generic: ['Utsav (concept demo)', 'jainutsav67@gmail.com', null],
-    reject_vendor: ['Utsav (concept demo)', 'jainutsav67@gmail.com', null],
-    not_a_buyer: ['Utsav (concept demo)', 'jainutsav67@gmail.com', null],
-    nurture_tour: ['Utsav (concept demo)', 'jainutsav67@gmail.com', null],
+    reject_personal_email: ['Utsav (Zenskar concept demo)', 'jainutsav67@gmail.com', null],
+    reject_generic: ['Utsav (Zenskar concept demo)', 'jainutsav67@gmail.com', null],
+    reject_vendor: ['Utsav (Zenskar concept demo)', 'jainutsav67@gmail.com', null],
+    not_a_buyer: ['Utsav (Zenskar concept demo)', 'jainutsav67@gmail.com', null],
+    nurture_tour: ['Utsav (Zenskar concept demo)', 'jainutsav67@gmail.com', null],
   };
   assert.deepEqual(Object.keys(rules.emails.templates).sort(), Object.keys(expected).sort());
   for (const [template, [fromName, replyTo, bcc]] of Object.entries(expected)) {
@@ -105,7 +105,7 @@ test('template content: sourced line only when there is one; vendor email has no
   const lead = { name: 'Dana Reyes', email: 'dana@acme.com' };
   const booking = { buyerLocal: 'Tue, Oct 20, 7:00 AM PDT' };
   const withSignal = buildEmail('tier_a_confirm', { lead, booking, env: {}, outcome: { signals: [{ type: 'funding', date: '2026-09-01' }], pricing: { model: 'usage' } } });
-  assert.equal(withSignal.subject, 'Your finance automation demo on Tue, Oct 20, 7:00 AM PDT');
+  assert.equal(withSignal.subject, 'Your Zenskar demo on Tue, Oct 20, 7:00 AM PDT');
   assert.match(withSignal.text, /Congrats on the funding round announced 2026-09-01\./);
   assert.match(withSignal.text, /1\. How do you get usage data into an invoice today/);
   assert.ok(withSignal.text.includes(rules.emails.productTourUrl));
@@ -124,7 +124,7 @@ test('DEMO_MODE: every email goes to DEMO_INBOX and the log says who it was mean
   const env = { DEMO_MODE: 'true', DEMO_INBOX: 'demo@inbox.example' };
   const result = await sendTemplate('reject_generic', { lead: { name: 'A B', email: 'a@acme.com' }, state, google, env });
   assert.deepEqual([google.emails[0].to, google.emails[0].bcc], ['demo@inbox.example', null]);
-  assert.match(result.line, /\| reject_generic \| to demo@inbox\.example \(demo mode; lead is a@acme\.com\) \| from Utsav \(concept demo\) \| reply-to jainutsav67@gmail\.com$/);
+  assert.match(result.line, /\| reject_generic \| to demo@inbox\.example \(demo mode; lead is a@acme\.com\) \| from Utsav \(Zenskar concept demo\) \| reply-to jainutsav67@gmail\.com$/);
 });
 
 test('the Gmail message carries the display name, reply-to and BCC', () => {
