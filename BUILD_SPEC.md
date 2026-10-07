@@ -134,7 +134,8 @@ Every alert starts with "For: <name>".
 - **Exact domain match in the CRM (free):**
   - Customer: CS channel, "For: Priya Shah", with a signed "Confirm meeting" link. Stop.
   - Open deal: AE channel, deal owner, same link. Stop.
-  - Known but not active (old lead, closed lost): continue, carrying the history (last touch, lost reason).
+  - Closed lost (change of 8 Oct 2026): AE channel, the old deal's owner, with the history (lost reason, last touch) and the same "Confirm meeting" link. No scoring. Stop.
+  - Known but not active (an old lead with no deal): continue to scoring.
 
 ### Step 3: Company profile, company family and gates
 - **CRM first:** use the CRM's headcount, country, industry and funding stage if all are present **and** fresh (`enriched_at` within 90 days, or field history within 90 days).
@@ -296,7 +297,7 @@ Every alert starts with "For: <name>".
 - customer: CS, 0 calls
 - open deal: AE, 0 calls
 - slack.com: Expansion
-- initech: A, with no enrichment call
+- initech (closed lost): back to the old deal owner, 0 calls
 - too small: DQ
 - Germany: DQ
 - consumer company: DQ

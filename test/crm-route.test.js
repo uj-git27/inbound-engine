@@ -52,13 +52,17 @@ test('open deal alias: alert in #ae-alerts for the deal owner', async () => {
   assert.equal(row.status, 'routed_open_deal');
 });
 
-test('closed lost (known, not active): continues to scoring, carrying the history', async () => {
+test('closed lost: goes back to the old deal owner with the history, no scoring and no paid calls', async () => {
   const { row, posts } = await submit({ email: 'jainutsav67+initech@gmail.com', company: 'Initech' });
+  assert.equal(posts.length, 1);
   assert.equal(posts[0].channel, 'ae-alerts');
-  assert.match(posts[0].text, /^For: Alex Morgan\n\*Tier A/);
-  assert.match(posts[0].text, /lost reason "Pricing", last touch 2026-06-15/);
-  assert.match(posts[0].text, /source: CRM/);
-  assert.equal(row.status, 'tier_a');
+  assert.match(posts[0].text, /^For: Alex Morgan\n\*Returning account: previously closed lost\*/);
+  assert.match(posts[0].text, /deal "TEST: Initech \(lost\)" was closed lost, lost reason "Pricing", last touch 2026-06-15/);
+  assert.match(posts[0].text, /Confirm meeting>/);
+  assert.equal(/Right tier|Wrong:/.test(posts[0].text), false);
+  assert.equal(row.status, 'routed_closed_lost');
+  assert.equal(row.paid_calls, 0);
+  assert.equal(row.tier, '');
 });
 
 test('unknown company: Tier C in #inbound-review plus a low-confidence post, not tagged DEMO', async () => {

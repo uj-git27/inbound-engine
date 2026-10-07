@@ -12,7 +12,7 @@ if (!chosen.length) {
   process.exit(1);
 }
 
-const pad = (text, width) => String(text).padEnd(width).slice(0, width);
+const pad = (text, width) => String(text).padEnd(width).slice(0, width - 1).padEnd(width);
 console.log(`${pad('', 5)}${pad('SAMPLE', 27)}${pad('EXPECT', 11)}${pad('GOT', 11)}${pad('SCORE', 6)}${pad('CHANNEL', 16)}${pad('PAID CALLS', 34)}`);
 let failed = 0;
 for (const sample of chosen) {
