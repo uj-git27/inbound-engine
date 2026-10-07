@@ -404,3 +404,44 @@ test('Monday summary: leads by tier, reviewer overrides and wrong-tier verdicts'
   assert.match(summary.text, /Reviewer overrides: 1 \(brightpath-hr\.com\)/);
   assert.match(summary.text, /1 wrong \(temporal\.io A→B\)/);
 });
+
+// ---------- Gmail app-password route (no Google Cloud) ----------
+
+test('invite email: a calendar invitation that mail clients recognise', async () => {
+  const { buildIcs, buildMime, parseIcsBusy } = await import('../lib/connectors/gmail-smtp.js');
+  const ics = buildIcs({
+    uid: 'u1@inbound-engine', summary: 'Demo; with, punctuation', description: 'Line one\nLine two',
+    start: '2026-10-20T14:00:00.000Z', end: '2026-10-20T14:30:00.000Z', organizer: 'me@gmail.com', attendees: ['buyer@acme.com'],
+  });
+  assert.match(ics, /METHOD:REQUEST\r\n/);
+  assert.match(ics, /DTSTART:20261020T140000Z\r\nDTEND:20261020T143000Z\r\n/);
+  assert.ok(ics.includes('SUMMARY:Demo\\; with\\, punctuation\r\n'));
+  assert.ok(ics.includes('DESCRIPTION:Line one\\nLine two\r\n'));
+  assert.match(ics, /ATTENDEE;[^\r\n]*:mailto:buyer@acme\.com\r\n/);
+  const mime = buildMime({ from: 'me@gmail.com', to: ['buyer@acme.com'], subject: 'Invitation: Démo', text: 'hello', ics });
+  assert.match(mime, /Content-Type: text\/calendar; charset=UTF-8; method=REQUEST/);
+  assert.match(mime, /Subject: =\?UTF-8\?B\?/);
+  const plain = buildMime({ from: 'me@gmail.com', to: ['a@b.co'], subject: 'Hi', text: 'Body' });
+  assert.match(plain, /Subject: Hi\r\n/);
+  assert.equal(Buffer.from(plain.split('\r\n\r\n')[1], 'base64').toString(), 'Body');
+  // The invite it builds reads back as a busy block.
+  assert.deepEqual(parseIcsBusy(ics), [{ start: '2026-10-20T14:00:00.000Z', end: '2026-10-20T14:30:00.000Z' }]);
+});
+
+test('calendar feed: UTC, zoned and all-day events are busy; cancelled and "free" ones are not', async () => {
+  const { parseIcsBusy } = await import('../lib/connectors/gmail-smtp.js');
+  const feed = [
+    'BEGIN:VCALENDAR',
+    'BEGIN:VEVENT', 'DTSTART:20261020T140000Z', 'DTEND:20261020T150000Z', 'SUMMARY:UTC meeting', 'END:VEVENT',
+    'BEGIN:VEVENT', 'DTSTART;TZID=America/Los_Angeles:20261021T090000', 'DTEND;TZID=America/Los_Angeles:20261021T100000', 'SUMMARY:Zoned', 'END:VEVENT',
+    'BEGIN:VEVENT', 'DTSTART;VALUE=DATE:20261022', 'DTEND;VALUE=DATE:20261023', 'SUMMARY:Day off', 'END:VEVENT',
+    'BEGIN:VEVENT', 'DTSTART:20261023T140000Z', 'DTEND:20261023T150000Z', 'STATUS:CANCELLED', 'END:VEVENT',
+    'BEGIN:VEVENT', 'DTSTART:20261024T140000Z', 'DTEND:20261024T150000Z', 'TRANSP:TRANSPARENT', 'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n');
+  assert.deepEqual(parseIcsBusy(feed), [
+    { start: '2026-10-20T14:00:00.000Z', end: '2026-10-20T15:00:00.000Z' },
+    { start: '2026-10-21T16:00:00.000Z', end: '2026-10-21T17:00:00.000Z' },
+    { start: '2026-10-22T04:00:00.000Z', end: '2026-10-23T04:00:00.000Z' },
+  ]);
+});
