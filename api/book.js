@@ -259,7 +259,7 @@ const page = () => `<!doctype html>
       $('hint').hidden = true;
       $('confirm').hidden = false;
       if (!chosen) return load(0);
-      // Wait until the form has reached us (up to 5 seconds), so the time lands on that request.
+      // Wait until the form has reached us (up to 20 seconds), so the time lands on that request.
       $('confirm').disabled = true;
       $('confirm').textContent = 'Booking…';
       (function wait(attempt) {
@@ -267,7 +267,7 @@ const page = () => `<!doctype html>
           .then(function (r) { return r.json(); })
           .then(function (state) {
             if (state.status === 'rejected') return handle(state);
-            if (state.status === 'unknown' && attempt < 5) return setTimeout(function () { wait(attempt + 1); }, 1000);
+            if (state.status === 'unknown' && attempt < 20) return setTimeout(function () { wait(attempt + 1); }, 1000);
             $('confirm').onclick();
           })
           .catch(function () { $('confirm').onclick(); });
