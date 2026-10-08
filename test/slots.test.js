@@ -369,7 +369,7 @@ test('book(): with nothing requested it takes the first free time', async () => 
 
 // ---------- the page ----------
 
-test('GET /book: one self-contained page, no external scripts, generic footer', async () => {
+test('GET /book: one self-contained page, no external scripts, no footer', async () => {
   const res = await bookPage();
   const html = await res.text();
   assert.equal(res.status, 200);
@@ -377,7 +377,7 @@ test('GET /book: one self-contained page, no external scripts, generic footer', 
   assert.match(res.headers.get('content-security-policy'), /default-src 'none'/);
   assert.equal(/<script[^>]+src=|<link[^>]+href=|@import|https?:\/\//i.test(html), false, 'nothing is loaded from elsewhere');
   assert.match(html, /<meta name="viewport" content="width=device-width, initial-scale=1">/);
-  assert.ok(html.includes(rules.disclaimer));
+  assert.equal(/<footer|Not affiliated/i.test(html), false, 'no disclaimer on the page');
   for (const text of ["/api/slots?sid=", "'/api/slot'", 'Invite on its way', 'Our team will confirm shortly', 'in touch by email', "attempt >= 5 ? '&force=1'", 'setTimeout(function () { load(attempt + 1); }, 1000)']) {
     assert.ok(html.includes(text), `page is missing: ${text}`);
   }

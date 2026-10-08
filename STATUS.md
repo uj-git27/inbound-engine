@@ -53,7 +53,7 @@ Headcount: enrichment wins. With no enrichment, the range typed on the form driv
 
 ## Before deploying the new flow
 
-1. Utsav builds the new Tally form, adds the webhook to `/api/lead` with the existing signing secret, and sets the redirect to `/book`.
+1. Done through the API (`node scripts/setup-tally.js`): new form https://tally.so/r/pblqzy with the webhook to `/api/lead` and a redirect to `/book?e=@Work email&sid=`. Still by hand: in the form's settings, under Redirect on completion, type @ at the end of the link and pick Submission ID. Until the deploy, a submission on this form reaches the old code on the live site.
 2. One test submission with a +alias; check the parser against the real payload (labels and the employees dropdown).
 3. `node scripts/setup-airtable.js` to add the new columns (employees_reported, in_their_words, lead_source, requested_slot, booked_slot, slot_changed, picked_at, buyer_tz, booking_lock).
 4. Add `AE_TZ` to Vercel if the AE is not on US Eastern time.
@@ -61,7 +61,7 @@ Headcount: enrichment wins. With no enrichment, the range typed on the form driv
 
 ## Known gaps and judgement calls
 
-- **Footer on `/book`:** uses the generic disclaimer ("Not affiliated with any real company"), because the product name was to stay off the form. The pasted spec asked for the product name there.
+- **Footer on `/book`:** none, by decision. No disclaimer on the page or on the new Tally form.
 - **Weekend-looking tabs:** slots are AE weekdays, but a visitor far from US Eastern can see one under a Saturday tab, because times are shown in their zone.
 - **15-minute fallback without a scheduler:** the app asks itself to run again later, in hops of up to 4 minutes. Tested with mocks only.
 - **Booking race:** scoring and the pick finishing in the same instant is guarded by a mark-and-recheck on the Airtable row, not a true lock.

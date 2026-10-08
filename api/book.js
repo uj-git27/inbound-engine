@@ -63,7 +63,6 @@ const page = () => `<!doctype html>
   .tick { width: 44px; height: 44px; margin: 0 auto 14px; border-radius: 50%; background: var(--soft); color: var(--ok); display: grid; place-items: center; font-size: 1.4rem; }
   .error { color: #c0392b; font-size: .9rem; margin-top: 10px; }
   .empty { color: var(--muted); padding: 18px 0 4px; }
-  footer { max-width: 720px; width: 100%; margin: 0 auto; padding: 14px 16px 22px; color: var(--muted); font-size: .78rem; text-align: center; }
   [hidden] { display: none !important; }
   @media (min-width: 640px) {
     main { padding-top: 48px; }
@@ -102,7 +101,6 @@ const page = () => `<!doctype html>
     </section>
   </div>
 </main>
-<footer>${esc(rules.disclaimer)}</footer>
 <script>
 (function () {
   var params = new URLSearchParams(location.search);
