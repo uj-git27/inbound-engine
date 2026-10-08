@@ -1,6 +1,6 @@
 [
   { "id": "01-temporal-cfo", "name": "Dana Reyes", "email": "jainutsav67+temporal@gmail.com", "title": "CFO", "employees": "501-1,000",
-    "help": "We bill on usage and month-end invoicing takes a week.", "lead_source": "A colleague",
+    "help": "We bill on usage and month-end invoicing takes a week.", "lead_source": "Referral from a colleague or friend",
     "expect": { "outcome": "A", "channel": "ae-alerts" } },
   { "id": "02-launchdarkly-revops", "name": "Morgan Blake", "email": "jainutsav67+launchdarkly@gmail.com", "title": "Head of Revenue Operations", "employees": "501-1,000",
     "expect": { "outcome": "A", "channel": "ae-alerts" } },

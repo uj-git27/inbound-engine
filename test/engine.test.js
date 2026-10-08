@@ -141,7 +141,7 @@ test('Tier A: brief in #ae-alerts for Alex Morgan; booked and confirmed once the
   assert.equal(fields.slot_changed, false);
   assert.match(fields.emails_log, /\| tier_a_confirm \| to jainutsav67\+temporal@gmail\.com \| from Alex Morgan \| reply-to jainutsav67\+alex@gmail\.com \| bcc jainutsav67\+alex@gmail\.com$/);
   assert.equal(c.crm.rows.get('temporal.io').tier, 'A');
-  assert.deepEqual([c.crm.contacts.get('jainutsav67+temporal@gmail.com').tier, c.crm.contacts.get('jainutsav67+temporal@gmail.com').lead_source], ['A', 'A colleague']);
+  assert.deepEqual([c.crm.contacts.get('jainutsav67+temporal@gmail.com').tier, c.crm.contacts.get('jainutsav67+temporal@gmail.com').lead_source], ['A', 'Referral from a colleague or friend']);
 });
 
 test('Tier B: hold on the AE calendar with "| SDR to take", brief in #sdr-inbound, no email', async () => {

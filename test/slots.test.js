@@ -383,3 +383,14 @@ test('GET /book: one self-contained page, no external scripts, no footer', async
     assert.ok(html.includes(text), `page is missing: ${text}`);
   }
 });
+
+test('GET /demo: the form and the time picker share one page', async () => {
+  const { GET: demoPage } = await import('../api/demo.js');
+  const res = await demoPage();
+  const html = await res.text();
+  assert.equal(res.status, 200);
+  assert.match(res.headers.get('content-security-policy'), /frame-src https:\/\/tally\.so 'self'/);
+  assert.ok(html.includes(`https://tally.so/embed/${rules.form.tally_form_id}`));
+  for (const text of ["event.origin !== 'https://tally.so'", 'Tally.FormSubmitted', "'/book?sid='"]) assert.ok(html.includes(text), `page is missing: ${text}`);
+  assert.equal(/<script[^>]+src=/i.test(html), false, 'no external scripts');
+});

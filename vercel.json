@@ -5,7 +5,8 @@
     }
   },
   "rewrites": [
-    { "source": "/book", "destination": "/api/book" }
+    { "source": "/book", "destination": "/api/book" },
+    { "source": "/demo", "destination": "/api/demo" }
   ],
   "crons": [
     { "path": "/api/summary", "schedule": "0 14 * * 1" },

@@ -94,3 +94,21 @@ test('brief: shows the summary above the signals and marks form answers', () => 
   assert.match(brief, /HQ Canada \(self-reported on the form\) · Software \/ SaaS \(self-reported on the form\)/);
   assert.equal(buildBrief({ lead: { name: 'Dana Reyes', title: 'CFO' }, outcome: { ...outcome, signals: [], growth: null } }).includes('Business changes in the last'), false);
 });
+
+test('a size rejection is still researched; a slam-dunk rejection is not', async () => {
+  const { samples, runSample } = await import('../lib/samples.js');
+  const { getConnectors, resetMocks } = await import('../lib/connectors/index.js');
+  process.env.DRY_RUN = 'true';
+  resetMocks();
+  const c = getConnectors();
+  const { got } = await runSample(samples.find((s) => s.id.startsWith('12')), c, { pick: null });
+  assert.ok(got.calls.includes('exa_news'));
+  const card = c.slack.posts[0].text;
+  assert.match(card, /\*Disqualified: headcount out of range\*/);
+  assert.ok(card.includes('*Why now:*') && card.includes('*CRM history:*'));
+  resetMocks();
+  const c2 = getConnectors();
+  const { got: gmail } = await runSample(samples.find((s) => s.id.startsWith('05')), c2, { pick: null });
+  assert.deepEqual(gmail.calls, []);
+  assert.equal(c2.slack.posts[0].text.includes('Why now'), false);
+});

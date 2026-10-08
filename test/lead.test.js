@@ -36,7 +36,7 @@ test('DRY_RUN with no keys: logs the raw payload first, replies 200, then parses
   assert.equal(row.fields.email, 'dana.reyes@temporal.io');
   assert.equal(row.fields.domain, 'temporal.io');
   assert.equal(row.fields.company, 'Temporal Technologies', 'the company name comes from enrichment, not the form');
-  assert.deepEqual([row.fields.employees_reported, row.fields.lead_source, row.fields.in_their_words], ['501-1,000', 'A colleague', 'Our invoicing for usage is manual.']);
+  assert.deepEqual([row.fields.employees_reported, row.fields.lead_source, row.fields.in_their_words], ['501-1,000', 'Referral from a colleague or friend', 'Our invoicing for usage is manual.']);
   assert.match(row.fields.timeline, /received\n.* parsed\n.* decided\n.* tier_a$/);
   // Qualified, but nothing is booked until the lead picks a time.
   assert.equal(row.fields.booked_slot ?? '', '');

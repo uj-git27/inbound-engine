@@ -49,12 +49,13 @@
       "first_name": "First name",
       "last_name": "Last name",
       "email": "Work email",
+      "company": "Company name",
       "title": "Job title",
       "country": "Country",
       "industry": "Industry",
       "employees": "Number of employees",
-      "help": "How can we help?",
-      "lead_source": "How did you hear about us?"
+      "lead_source": "How did you hear about us?",
+      "help": "Anything specific you'd like to explore?"
     },
     "fields": {
       "first_name": "first name",
@@ -62,10 +63,11 @@
       "email": "email",
       "employees": "employees",
       "title": "job title",
-      "help": "how can we help",
+      "help": "anything specific|how can we help",
       "lead_source": "how did you hear",
       "country": "^country",
-      "industry": "^industry"
+      "industry": "^industry",
+      "company": "company name"
     },
     "required": [
       "first_name",
@@ -114,6 +116,7 @@
     "max_field_length": 300,
     "thank_you": "Thanks! We've got your request and will be in touch shortly.",
     "ask_required": [
+      "company",
       "employees",
       "industry",
       "country"
@@ -121,16 +124,26 @@
     "other_option": "Other",
     "industries": [
       "Software / SaaS",
+      "IT services",
       "Fintech / Payments",
+      "Financial services / Banking",
       "AI / Data / Cloud infrastructure",
-      "Healthcare",
+      "Cybersecurity",
+      "Healthcare / Life sciences",
       "Logistics / Supply chain",
-      "Marketplace",
+      "Marketplace / E-commerce platform",
       "Telecom / Media",
       "Insurance",
+      "Manufacturing",
+      "Energy / Utilities",
+      "Education",
+      "Real estate / Construction",
+      "Professional services",
+      "Travel / Hospitality",
       "Retail / Consumer goods",
       "Venture capital / Private equity",
       "Staffing / Recruiting",
+      "Government / Non-profit",
       "Other"
     ],
     "countries": [
@@ -167,7 +180,20 @@
       "Australia",
       "New Zealand",
       "Other"
-    ]
+    ],
+    "lead_sources": [
+      "Google or web search",
+      "LinkedIn",
+      "Referral from a colleague or friend",
+      "One of your customers or partners",
+      "Event or webinar",
+      "Podcast, newsletter or blog",
+      "AI assistant (ChatGPT, Claude, etc.)",
+      "Review site (G2, Capterra)",
+      "Other"
+    ],
+    "embed_height": 1250,
+    "tally_form_id": "pblqzy"
   },
   "demo_aliases": {
     "jainutsav67+temporal@gmail.com": "temporal.io",
@@ -347,6 +373,9 @@
       "gambling & casinos",
       "music",
       "entertainment"
+    ],
+    "research_when_disqualified": [
+      "headcount out of range"
     ]
   },
   "signals": {
@@ -408,7 +437,10 @@
             "apis",
             "payments",
             "developer tools",
-            "cloud"
+            "cloud",
+            "it services",
+            "cybersecurity",
+            "banking"
           ]
         },
         "adjacent": {

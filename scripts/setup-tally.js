@@ -30,16 +30,18 @@ const blocks = [
   question(labels.first_name), input('INPUT_TEXT', needs('first_name')),
   question(labels.last_name), input('INPUT_TEXT', needs('last_name')),
   question(labels.email), email,
+  question(labels.company), input('INPUT_TEXT', needs('company')),
   question(labels.title), input('INPUT_TEXT', needs('title')),
   question(labels.country), ...dropdown(rules.form.countries, needs('country')),
   question(labels.industry), ...dropdown(rules.form.industries, needs('industry')),
   question(labels.employees), ...dropdown(bands.map((b) => b.label), needs('employees')),
+  question(labels.lead_source), ...dropdown(rules.form.lead_sources, needs('lead_source')),
   question(labels.help), input('TEXTAREA', needs('help')),
-  question(labels.lead_source), input('INPUT_TEXT', needs('lead_source')),
 ];
 
-// After submit, Tally sends the visitor to our slot page with their email and the submission ID.
-// The shape of the submission ID mention is copied from what Tally's own editor saves.
+// The form is shown inside our own page (/demo), which swaps in the time picker after submit.
+// Someone who opens the Tally link directly is sent to the time picker page instead, with their
+// email and the submission ID. The shape of that ID mention is copied from Tally's own editor.
 const base = need('BASE_URL').replace(/\/$/, '');
 const mail = { uuid: randomUUID(), name: labels.email };
 const sid = { uuid: randomUUID(), name: 'Submission ID' };

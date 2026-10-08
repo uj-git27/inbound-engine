@@ -103,8 +103,8 @@ test('cards: customer, open deal, expansion and tier brief each carry the histor
   assert.ok(northwind.includes('*CRM history:*\n   3 touches since 2026-07-08. Last: email by Sam Patel, 2026-07-22 (no reply).\n   "TEST: Cold sequence finished, no response." (note, 2026-07-23, Sam Patel)'));
 });
 
-test('cards: a company that is not in the CRM gets no history block', async () => {
+test('cards: a company that is not in the CRM is shown as net new', async () => {
   const c = getConnectors();
   await runSample(samples.find((s) => s.id.startsWith('01')), c, { pick: null });
-  assert.equal(c.slack.posts[0].text.includes('CRM history'), false);
+  assert.ok(c.slack.posts[0].text.includes('*CRM history:*\n   No prior activity. Net new account.'));
 });
