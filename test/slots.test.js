@@ -391,6 +391,18 @@ test('GET /demo: the form and the time picker share one page', async () => {
   assert.equal(res.status, 200);
   assert.match(res.headers.get('content-security-policy'), /frame-src https:\/\/tally\.so 'self'/);
   assert.ok(html.includes(`https://tally.so/embed/${rules.form.tally_form_id}`));
-  for (const text of ["event.origin !== 'https://tally.so'", 'Tally.FormSubmitted', "'/book?sid='"]) assert.ok(html.includes(text), `page is missing: ${text}`);
+  // The picker is on the page from the start and is told when the form is submitted.
+  for (const text of ["event.origin !== 'https://tally.so'", 'Tally.FormSubmitted', 'src="/book?pre=1"', "type: 'form-submitted'"]) assert.ok(html.includes(text), `page is missing: ${text}`);
   assert.equal(/<script[^>]+src=/i.test(html), false, 'no external scripts');
+});
+
+test('GET /api/slots?open=1: the open times without a submission; the picker takes the submission later', async () => {
+  const { GET: slotsApi } = await import('../api/slots.js');
+  const res = await slotsApi(new Request('https://engine.example/api/slots?open=1'));
+  const data = await res.json();
+  assert.deepEqual([res.status, data.status, data.slots.length > 0], [200, 'ok', true]);
+  assert.equal((await slotsApi(new Request('https://engine.example/api/slots'))).status, 400);
+  const { GET: bookPage } = await import('../api/book.js');
+  const html = await (await bookPage()).text();
+  for (const text of ["params.get('pre') === '1'", "'/api/slots?open=1'", "data.type !== 'form-submitted'", 'event.origin !== location.origin']) assert.ok(html.includes(text), `picker is missing: ${text}`);
 });
