@@ -32,7 +32,8 @@ afterEach(() => {
 test('Tier A: the intro email is shown in the thread for review and is not sent until the AE sends it', async () => {
   const c = getConnectors();
   await runSample(sample('01'), c);
-  const [alert, note, draft] = c.slack.posts;
+  const alert = c.slack.posts[0];
+  const [note, draft] = c.slack.posts.filter((p) => p.thread_ts);
   assert.equal(note.thread_ts, alert.ts);
   assert.equal(draft.thread_ts, alert.ts);
   assert.match(draft.text, /^\*Optional intro email from Alex Morgan\* \(not sent; review it, then send it if you want to\):\n\*Subject:\* Introducing myself before our Zenskar demo\n> Hi Dana,/);

@@ -382,12 +382,14 @@
   "signals": {
     "window_months": 12,
     "points": {
-      "funding": 10,
-      "new_finance_leader": 10,
-      "ipo_prep": 10,
-      "m_and_a": 8,
-      "revenue_milestone": 6,
-      "international_expansion": 6
+      "funding": 5,
+      "new_finance_leader": 4,
+      "ipo_prep": 3,
+      "m_and_a": 3,
+      "revenue_milestone": 2,
+      "international_expansion": 2,
+      "partnership": 1,
+      "layoffs": -5
     },
     "rules": {
       "funding": "\\b(raises?|raised|secures?|secured|closes|closed|lands?|landed)\\b.{0,60}[$€£]\\s?\\d|\\bseries [a-h]\\b|\\bfunding round\\b|\\bseed round\\b",

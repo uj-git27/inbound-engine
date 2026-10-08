@@ -115,9 +115,10 @@ test('Exa person match: exact name and a role at the company, or unknown', () =>
 test('Tier A: brief in #ae-alerts for Alex Morgan; booked and confirmed once the lead picks a time', async () => {
   const c = getConnectors();
   await runSample(sample('01'), c);
-  const [alert, booked] = c.slack.posts;
+  const alert = c.slack.posts[0];
+  const booked = c.slack.posts.find((p) => p.text.startsWith('Booked:'));
   assert.equal(alert.channel, 'ae-alerts');
-  assert.match(alert.text, /^For: Alex Morgan\n\*Tier A · 90\/100\*/);
+  assert.match(alert.text, /^For: Alex Morgan\n\*Tier A · 85\/100\*/);
   for (const section of ['Who:', 'In their words:', 'LinkedIn:', 'Phone:', 'Company:', 'Why now:', 'Likely billing pain:', 'Customer story:', '3 discovery questions:', 'Why this tier:']) {
     assert.ok(alert.text.includes(`*${section}*`), `brief is missing ${section}`);
   }
@@ -186,16 +187,15 @@ test('"In their words" is quoted, escaped and never acted on', async () => {
   assert.ok(quoted.replace(/&lt;|&gt;/g, '<').length <= 300, 'at most 300 characters');
 });
 
-test('DEMO_MODE: the invite and every email go to DEMO_INBOX; aliases get the person lookup but never the phone lookup', async () => {
+test('DEMO_MODE: the invite and every email go to DEMO_INBOX; aliases are enriched like any lead', async () => {
   process.env.DEMO_MODE = 'true';
   process.env.DEMO_INBOX = 'demo@inbox.example';
   const c = getConnectors();
   const { got } = await runSample(sample('01'), c);
   assert.deepEqual(c.google.events[0].attendees, [{ email: 'demo@inbox.example' }]);
   assert.equal(got.calls.includes('apollo_person'), true, 'the name typed on the form is looked up');
-  assert.equal(got.calls.includes('fullenrich_phone'), false);
-  assert.match(c.slack.posts[0].text, /\*Phone:\* not looked up \(demo lead\)/);
-  assert.equal(c.slack.posts.length, 3, 'the brief, the booking note and the intro draft; no contact follow-up');
+  assert.match(row(c, '01').fields.paid_calls_detail, /fullenrich_phone/, 'and so is the phone');
+  assert.equal(c.slack.posts.length, 4, 'the brief, the contact follow-up, the booking note and the intro draft');
   assert.equal(c.clay.rows.length, 0);
   assert.deepEqual(c.google.emails.map((e) => [e.to, e.bcc]), [['demo@inbox.example', null]]);
 });

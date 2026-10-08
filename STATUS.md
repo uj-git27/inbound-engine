@@ -24,12 +24,12 @@ Last updated: 8 Oct 2026 (commit after `b6cbbf0`). Concept built on public data.
 
 - **Form answers win** for employee size, industry and country: they are shown on the card ("self-reported on the form") and drive the gates and the score. Enrichment is used only when the form says "Other" or is blank. The CRM keeps what enrichment found. A headcount more than one band away from enrichment adds a "headcount mismatch" flag for review.
 - **Company name:** the CRM's or enrichment's name is used; the one typed on the form is the fallback.
-- **Signals:** only business growth or decline counts (funding, new finance leader, IPO, M&A, revenue, expansion, partnership, layoffs, decline). Product or feature releases are not signals. Partnership, layoffs and decline are shown but not scored.
+- **Signals:** only business growth or decline counts (funding, new finance leader, IPO, M&A, revenue, expansion, partnership, layoffs, decline). Product or feature releases are not signals. "Why now" points add up to exactly 20: funding 5, new finance leader 4, IPO prep 3, M&A 3, revenue milestone 2, international expansion 2, partnership 1. Layoffs are a penalty of 5 (the part never goes below 0). Decline is shown but not scored. The card's "Why this tier" line lists each signal with its points.
 - **12 months, strict:** asked of the search, checked on every article date, and checked again on saved results. An article with no date is dropped.
 - **Summary:** Gemini writes 2 to 3 lines from those signals only (`LLM_PROVIDER=gemini`). If it fails or adds a number that is not in the signals, a template line is used.
 - **Size rejections** (headcount out of range) still get the 12-month research and summary on their card. Other rejections get no research.
 - **Parent and subsidiary:** checked before the gates, from HubSpot links, then Apollo, then a web search (Exa). A parent or subsidiary that is a customer or has an open deal makes the lead an "Expansion" card for that account's owner.
-- **Role-played demo leads:** any `jainutsav67+<something>@gmail.com`. The company is researched for real, the card is tagged DEMO, and duplicate and rate limits do not apply. The person typed on the form is looked up (LinkedIn, role); the phone is not.
+- **Role-played demo leads:** any `jainutsav67+<something>@gmail.com`. The company is researched for real and duplicate and rate limits do not apply. The card carries no DEMO tag, and the person typed on the form is enriched like any lead: LinkedIn and role, then the phone (FullEnrich, paid) for Tier A and B.
 - **Tier B at short notice:** a meeting booked less than 4 hours ahead is not auto-released by the "unconfirmed 4 hours before" rule.
 
 ## CRM history

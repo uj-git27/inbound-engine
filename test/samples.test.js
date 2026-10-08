@@ -51,7 +51,7 @@ test('the Apollo result is cached by domain: a rerun makes no company call', asy
   assert.ok((await runSample(sample, connectors)).got.calls.includes('apollo_company'));
   const rerun = await runSample(sample, connectors);
   assert.equal(rerun.got.calls.includes('apollo_company'), false);
-  assert.equal(rerun.got.score, 90);
+  assert.equal(rerun.got.score, 85);
 });
 
 test('persona: whole words, and VP of Engineering is engineering', () => {

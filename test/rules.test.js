@@ -18,8 +18,10 @@ test('rules: scoring adds up to 100 and tiers match the spec', () => {
   assert.equal(s.fit.industry.core.points + s.fit.funded, s.fit.max);
   assert.deepEqual(rules.tiers, { A: 60, B: 40 });
   assert.deepEqual(rules.signals.points, {
-    funding: 10, new_finance_leader: 10, ipo_prep: 10, m_and_a: 8, revenue_milestone: 6, international_expansion: 6,
+    funding: 5, new_finance_leader: 4, ipo_prep: 3, m_and_a: 3, revenue_milestone: 2, international_expansion: 2, partnership: 1, layoffs: -5,
   });
+  // The growth signals together make exactly the "why now" maximum; layoffs are a penalty.
+  assert.equal(Object.values(rules.signals.points).filter((p) => p > 0).reduce((a, b) => a + b, 0), s.why_now.max);
 });
 
 test('rules: demo aliases map to the 6 spec domains, plus the ones added for the demo', () => {

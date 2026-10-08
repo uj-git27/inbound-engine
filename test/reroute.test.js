@@ -129,7 +129,7 @@ test('general alias: you+<company domain>@gmail.com stands in for that company',
   const lead = { id: 'general-alias', name: 'Morgan Blake', email: 'jainutsav67+launchdarkly.com@gmail.com', title: 'Head of Revenue Operations', company: 'LaunchDarkly', expect: { outcome: 'A', channel: 'ae-alerts' } };
   const { problems } = await runSample(lead, c);
   assert.deepEqual(problems, []);
-  assert.match(c.slack.posts[0].text, /`DEMO`/);
+  assert.equal(c.slack.posts[0].text.includes('DEMO'), false, 'an alias lead is not tagged on the card');
 });
 
 test('"Right tier" only records the verdict and moves nothing', async () => {
