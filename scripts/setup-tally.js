@@ -14,12 +14,21 @@ const tally = (path, { method = 'GET', body } = {}) =>
 const listed = (json) => json.items ?? json.data ?? json.forms ?? json.webhooks ?? (Array.isArray(json) ? json : []);
 
 const block = (type, groupType, payload, groupUuid = randomUUID()) => ({ uuid: randomUUID(), type, groupUuid, groupType, payload });
-const question = (label) => block('TITLE', 'QUESTION', { html: label });
+// A small label (Tally's LABEL block) names the field that follows it, like a question title does.
+const question = (label) => block('LABEL', 'LABEL', { html: label });
 const input = (type, isRequired) => block(type, type, { isRequired, placeholder: '' });
 const dropdown = (options, isRequired) => {
   const groupUuid = randomUUID();
   return options.map((text, index) =>
     block('DROPDOWN_OPTION', 'DROPDOWN', { index, isFirst: index === 0, isLast: index === options.length - 1, isRequired, text }, groupUuid));
+};
+// Two fields side by side: every block of a field carries the row and its own column.
+const row = (left, right) => {
+  const columnListUuid = randomUUID();
+  return [left, right].flatMap((field) => {
+    const columnUuid = randomUUID();
+    return field.map((b) => ({ ...b, payload: { ...b.payload, columnListUuid, columnUuid, columnRatio: 50 } }));
+  });
 };
 
 const { labels, title, required, employee_bands: bands } = rules.form;
@@ -27,15 +36,12 @@ const needs = (key) => required.includes(key) || rules.form.ask_required.include
 const email = input('INPUT_EMAIL', needs('email'));
 const blocks = [
   block('FORM_TITLE', 'TEXT', { title, html: title }),
-  question(labels.first_name), input('INPUT_TEXT', needs('first_name')),
-  question(labels.last_name), input('INPUT_TEXT', needs('last_name')),
-  question(labels.email), email,
-  question(labels.company), input('INPUT_TEXT', needs('company')),
-  question(labels.title), input('INPUT_TEXT', needs('title')),
-  question(labels.country), ...dropdown(rules.form.countries, needs('country')),
-  question(labels.industry), ...dropdown(rules.form.industries, needs('industry')),
-  question(labels.employees), ...dropdown(bands.map((b) => b.label), needs('employees')),
+  ...row([question(labels.first_name), input('INPUT_TEXT', needs('first_name'))], [question(labels.last_name), input('INPUT_TEXT', needs('last_name'))]),
+  ...row([question(labels.email), email], [question(labels.company), input('INPUT_TEXT', needs('company'))]),
+  ...row([question(labels.title), input('INPUT_TEXT', needs('title'))], [question(labels.country), ...dropdown(rules.form.countries, needs('country'))]),
+  ...row([question(labels.industry), ...dropdown(rules.form.industries, needs('industry'))], [question(labels.employees), ...dropdown(bands.map((b) => b.label), needs('employees'))]),
   question(labels.lead_source), ...dropdown(rules.form.lead_sources, needs('lead_source')),
+  // The open question keeps a full row.
   question(labels.help), input('TEXTAREA', needs('help')),
 ];
 

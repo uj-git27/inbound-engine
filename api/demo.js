@@ -16,6 +16,8 @@ const page = (id) => `<!doctype html>
   html, body { margin: 0; background: #fff; }
   main { max-width: 760px; margin: 0 auto; padding: 0 8px; }
   iframe { display: block; width: 100%; border: 0; height: ${Number(rules.form.embed_height)}px; }
+  /* On a narrow screen the form's two columns stack, so it needs the taller frame. */
+  @media (max-width: 640px) { iframe { height: ${Number(rules.form.embed_height_narrow)}px; } }
 </style>
 </head>
 <body>
