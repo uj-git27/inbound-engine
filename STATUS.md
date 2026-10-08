@@ -6,14 +6,14 @@ Last updated: 8 Oct 2026 (commit after `b6cbbf0`). Concept built on public data.
 
 - Site: https://inbound-engine-indol.vercel.app
 - **Every `git push` to `main` deploys to production** (Vercel is linked to the GitHub repo). A push is a deploy.
-- Demo page: `/demo`. The Tally form (https://tally.so/r/pblqzy) sits in a frame; after submit the time picker (`/book`) takes its place on the same page.
+- Demo page: `/demo`. The Tally form (https://tally.so/r/pblqzy) and the time picker (`/book?pre=1`) sit side by side from the start. The visitor picks a time and submits the form; the picker then books that time for the submission. Share the `/demo` link, not the Tally link.
 - The old form (https://tally.so/r/J9NYgR) no longer matches the parser. Do not use it.
 
 ## The flow
 
 1. Form fields: First name, Last name, Work email, Company name, Job title, Country, Industry, Number of employees (all required), How did you hear about us? (dropdown, optional), Anything specific you'd like to explore? (optional).
 2. Tally sends the submission to `POST /api/lead` (signed). The engine runs: free checks > CRM lookup > family check > company profile > gates > signals > score > tier > Slack card > Airtable log > CRM save.
-3. The time picker calls `GET /api/slots?sid=`. A slam-dunk reject sees "Thanks, we'll be in touch by email." and no calendar. If the form has not reached us yet, the page retries every second for 5 seconds, then shows times anyway.
+3. The time picker shows the open times straight away (`GET /api/slots?open=1`). On submit it waits up to 5 seconds for the form to reach us, then books. A slam-dunk reject sees "Thanks, we'll be in touch by email." instead. A visitor who submits without picking can still pick afterwards.
 4. Slots: next 5 weekdays, 30 minutes, 9:00 to 17:00 in the AE's time zone (`AE_TZ`, default America/New_York), at least 2 hours out, minus anything busy on the calendar. Shown in the visitor's own time zone.
 5. `POST /api/slot {sid, slot, tz}` stores the pick. Tier A: booked, "Invite on its way." Tier B: hold booked, "Our team will confirm shortly." Tier C and others: the pick is kept, nothing is booked.
 6. Booking happens when the lead is qualified AND has picked a time, whichever comes second. Free/busy is checked again at booking; if the time was taken, the next free one is booked and the invite and email say so.
@@ -39,8 +39,8 @@ Every card about a company carries up to 3 lines: touches, deal status, latest n
 ## Open problems
 
 - **HubSpot email read is 403.** The service key needs `sales-email-read` (or `crm.objects.emails.read`). Until then accounts with emails (Initech, Northwind) show "CRM history unavailable", and the history seed cannot be re-run.
-- **15-minute fallback not proven live.** Two live tests failed to book by themselves. Likely cause: the last delayed call was cut off after 10 seconds, before the booking finished. A fix is deployed (`api/sweep.js` now answers at once and works afterwards) but has not been re-tested live.
-- **`/demo` time picker in place not confirmed.** With the Tally redirect on, the visitor was taken to a separate `/book` page. The redirect is now removed, so the page should swap the form for the time picker itself; this needs one manual test.
+- **15-minute fallback:** worked live once (a Tier B test lead with no pick was booked by itself). Not tested repeatedly.
+- **`/demo` checked in a headless browser:** pick a time, submit, booked on one row, with LinkedIn, role start and the Gemini summary on the lead. Not checked on a phone.
 - **Timers on a schedule:** Vercel's free plan runs them once a day; they also run on every new lead. The GitHub job in `scripts/github-sweep-workflow.yml` is written but not enabled.
 
 ## Proven on the live site
