@@ -73,7 +73,7 @@ Every card about a company carries up to 3 lines: touches, deal status, latest n
 - **Person data:** LinkedIn and title only (Exa). Time in role and previous companies stay unknown without a paid Apollo plan.
 - **Google sign-in** expires 7 days after 7 Oct 2026 while the OAuth app is in Testing mode.
 - **Emails name the product;** the forms and Slack alerts do not. The brief names the customer stories.
-- **Airtable:** `first_choice`, `backup_choice`, `time_zone`, `website` and the default "Table 1" are left over from the old form and can be deleted by hand (the API cannot delete columns).
+- **Airtable:** `first_choice`, `backup_choice`, `time_zone`, `website`, `drafts` and the default "Table 1" are not used by the engine and can be deleted by hand (the API cannot delete columns).
 
 ## Where things are
 
