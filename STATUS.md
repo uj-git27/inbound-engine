@@ -1,81 +1,84 @@
 # Status
 
-Last updated: 8 Oct 2026. Concept built on public data.
+Last updated: 8 Oct 2026 (commit after `b6cbbf0`). Concept built on public data.
 
 ## What is live
 
-The new form flow is deployed (8 Oct 2026): Tally step 1 at https://tally.so/r/pblqzy, then our slot page at `/book`. The old form (https://tally.so/r/J9NYgR) no longer matches the parser and should not be used.
+- Site: https://inbound-engine-indol.vercel.app
+- **Every `git push` to `main` deploys to production** (Vercel is linked to the GitHub repo). A push is a deploy.
+- Demo page: `/demo`. The Tally form (https://tally.so/r/pblqzy) sits in a frame; after submit the time picker (`/book`) takes its place on the same page.
+- The old form (https://tally.so/r/J9NYgR) no longer matches the parser. Do not use it.
+
+## The flow
+
+1. Form fields: First name, Last name, Work email, Company name, Job title, Country, Industry, Number of employees (all required), How did you hear about us? (dropdown, optional), Anything specific you'd like to explore? (optional).
+2. Tally sends the submission to `POST /api/lead` (signed). The engine runs: free checks > CRM lookup > family check > company profile > gates > signals > score > tier > Slack card > Airtable log > CRM save.
+3. The time picker calls `GET /api/slots?sid=`. A slam-dunk reject sees "Thanks, we'll be in touch by email." and no calendar. If the form has not reached us yet, the page retries every second for 5 seconds, then shows times anyway.
+4. Slots: next 5 weekdays, 30 minutes, 9:00 to 17:00 in the AE's time zone (`AE_TZ`, default America/New_York), at least 2 hours out, minus anything busy on the calendar. Shown in the visitor's own time zone.
+5. `POST /api/slot {sid, slot, tz}` stores the pick. Tier A: booked, "Invite on its way." Tier B: hold booked, "Our team will confirm shortly." Tier C and others: the pick is kept, nothing is booked.
+6. Booking happens when the lead is qualified AND has picked a time, whichever comes second. Free/busy is checked again at booking; if the time was taken, the next free one is booked and the invite and email say so.
+7. No pick within 15 minutes: Tier A and B get the next free slot.
+8. Once booked, the Slack card itself is edited to say "Booked: <time>"; the details go in its thread.
+
+## Rules worth knowing
+
+- **Form answers win** for employee size, industry and country: they are shown on the card ("self-reported on the form") and drive the gates and the score. Enrichment is used only when the form says "Other" or is blank. The CRM keeps what enrichment found. A headcount more than one band away from enrichment adds a "headcount mismatch" flag for review.
+- **Company name:** the CRM's or enrichment's name is used; the one typed on the form is the fallback.
+- **Signals:** only business growth or decline counts (funding, new finance leader, IPO, M&A, revenue, expansion, partnership, layoffs, decline). Product or feature releases are not signals. Partnership, layoffs and decline are shown but not scored.
+- **12 months, strict:** asked of the search, checked on every article date, and checked again on saved results. An article with no date is dropped.
+- **Summary:** Gemini writes 2 to 3 lines from those signals only (`LLM_PROVIDER=gemini`). If it fails or adds a number that is not in the signals, a template line is used.
+- **Size rejections** (headcount out of range) still get the 12-month research and summary on their card. Other rejections get no research.
+- **Parent and subsidiary:** checked before the gates, from HubSpot links, then Apollo, then a web search (Exa). A parent or subsidiary that is a customer or has an open deal makes the lead an "Expansion" card for that account's owner.
+- **Role-played demo leads:** any `jainutsav67+<something>@gmail.com`. The company is researched for real, the card is tagged DEMO, and duplicate and rate limits do not apply. The person typed on the form is looked up (LinkedIn, role); the phone is not.
+- **Tier B at short notice:** a meeting booked less than 4 hours ahead is not auto-released by the "unconfirmed 4 hours before" rule.
 
 ## CRM history
 
-Every card about a company the CRM knows (Tier A/B/C brief, customer, open deal, closed lost, expansion with the parent's history) carries up to 3 lines: touches, deal status, latest note. Template only, no AI. Read from HubSpot (emails, calls, meetings, notes, deals), saved for 60 minutes, and "CRM history unavailable" if the read fails. Seed: `node scripts/seed-history.js` (TEST records for Initech, Northwind, Globex, Acme, Salesforce).
+Every card about a company carries up to 3 lines: touches, deal status, latest note. Template only, no AI. Shown on Tier A/B/C briefs, customer, open deal, closed lost, expansion (the parent's history) and gate rejections. A company that is not in the CRM shows "No prior activity. Net new account." Read from HubSpot (emails, calls, meetings, notes, deals), saved for 60 minutes; "CRM history unavailable" if the read fails. Seed: `node scripts/seed-history.js` (TEST records for Initech, Northwind, Globex, Acme, Salesforce).
 
-Open: the HubSpot key still cannot READ emails (403; it needs `sales-email-read`), so accounts with emails (Initech, Northwind) show "CRM history unavailable" until that scope works.
+## Open problems
 
-## What works (tests, DRY_RUN)
+- **HubSpot email read is 403.** The service key needs `sales-email-read` (or `crm.objects.emails.read`). Until then accounts with emails (Initech, Northwind) show "CRM history unavailable", and the history seed cannot be re-run.
+- **15-minute fallback not proven live.** Two live tests failed to book by themselves. Likely cause: the last delayed call was cut off after 10 seconds, before the booking finished. A fix is deployed (`api/sweep.js` now answers at once and works afterwards) but has not been re-tested live.
+- **`/demo` in a real browser not confirmed.** Whether the picker appears in place, or Tally's redirect sends the visitor to `/book`, needs one manual test. If it redirects, remove the redirect in `scripts/setup-tally.js`.
+- **Timers on a schedule:** Vercel's free plan runs them once a day; they also run on every new lead. The GitHub job in `scripts/github-sweep-workflow.yml` is written but not enabled.
 
-- `node --test`: 194 tests pass.
-- `node scripts/replay.js`: 15 of 15 sample leads match. Also `--no-pick` (15-minute fallback) and `--busy` (picked time taken meanwhile).
-- Core flow: webhook > free checks > CRM lookup > family check > company profile > gates > signals > score > tier > alert in Slack > Airtable log > CRM save.
+## Proven on the live site
 
-## What is proven on the live site (old form)
-
-- Form submission to Airtable, signature check, Tally retry handling.
-- Routing of customer, open deal, closed lost, expansion (Apollo, web and HubSpot-linked), disqualified, Tier A and Tier C leads to the right Slack channel and owner.
-- Company data from Apollo; web check, news and people search from Exa; pricing page from Firecrawl.
-- Signed action links, and a simulated signed Slack button click.
-- Automatic rejection email for a slam-dunk reject, sent through Gmail (to DEMO_INBOX in demo mode).
-- Google sign-in: one test invite and one test email were accepted by Google.
+- Signed form submissions, Airtable log, Tally retry handling.
+- Routing of customer, open deal, closed lost, expansion, disqualified, Tier A and Tier C leads to the right Slack channel and owner.
+- A real booking end to end: Cohere (picked on the slot page) and Northwind (booked by a manual run of the timed rules), each with a calendar event.
+- Company data from Apollo; web check, news and people search from Exa; pricing page from Firecrawl; one Gemini summary.
+- CRM history from HubSpot for Globex, Acme and Salesforce.
+- Automatic rejection email for a slam-dunk reject.
 
 ## Not proven live
 
-- A real lead being booked on the calendar end to end (old or new flow).
-- A real click on a Slack button by a person.
-- Re-routing through "Wrong: A / B / C" on a real alert.
-- FullEnrich phone lookup (never run on a real lead).
-- Everything in the new form flow: `/book`, `/api/slots`, `/api/slot`, the 15-minute fallback.
-- The timers on a schedule: Vercel's free plan only runs them once a day. They also run on every new lead. The hourly GitHub job in `scripts/github-sweep-workflow.yml` is written but not enabled.
+- A real click on a Slack button by a person; re-routing through "Wrong: A / B / C".
+- The Slack card being edited to "Booked".
+- The person lookup for a demo alias.
+- FullEnrich phone lookup.
+- The expansion card with the parent's history (covered by tests only).
 
-## The new form flow (in the repo)
+## Tests
 
-1. Tally step 1 fields: First name, Last name, Work email, Job title, Country (dropdown), Industry (dropdown), Number of employees (dropdown), How can we help? (optional), How did you hear about us? (optional).
-2. Tally redirects to `/book?sid=@SubmissionID&e=@WorkEmail`.
-3. `/book` calls `GET /api/slots?sid=`. A slam-dunk reject sees "Thanks, we'll be in touch by email." and no calendar. If the form has not reached us yet, the page retries every second for 5 seconds, then shows times anyway.
-4. Slots: next 5 weekdays, 30 minutes, 9:00 to 17:00 in the AE's time zone (`AE_TZ`, default America/New_York), at least 2 hours out, minus anything busy on the calendar. Shown in the visitor's own time zone.
-5. `POST /api/slot {sid, slot, tz}` stores the pick. Tier A: booked, "Invite on its way." Tier B: hold booked, "Our team will confirm shortly." Tier C and others: the pick is kept, nothing is booked.
-6. Free/busy is checked again at booking. If the time was taken, the next free one is booked and the invite and email say so.
-7. No pick within 15 minutes: Tier A and B get the next free slot.
-8. A second POST for the same submission returns the existing booking.
-
-Parser rules: the join key is the Tally submission ID; the domain comes from the work email; fields are found by label; dropdown IDs are resolved through the options list, never hardcoded.
-
-Headcount: enrichment wins. With no enrichment, the range typed on the form drives the 200 to 2,000 gate. If both exist and are more than one band apart, the lead is flagged "headcount mismatch" for review; it is never disqualified for that.
-
-Industry and country from the form work like headcount: enrichment wins, the form fills what enrichment left unknown (and then drives the gates and the fit score), and the brief marks it "self-reported on the form". "Other" stays unknown.
-
-Signals: only business growth or decline counts (funding, new finance leader, IPO, M&A, revenue, expansion, partnership, layoffs, decline). Product or feature releases are not signals. Partnership, layoffs and decline are shown but not scored. The 12-month window is strict: asked of the search, checked on every article date, and checked again on saved results; an article with no date is dropped. The brief opens the signals with a 2 to 3 line summary written by Gemini from those signals only (`LLM_PROVIDER=gemini`); if Gemini fails or adds a number that is not in the signals, a template line is used.
-
-## Before deploying the new flow
-
-1. Done through the API (`node scripts/setup-tally.js`): new form https://tally.so/r/pblqzy with the webhook to `/api/lead` and a redirect to `/book?e=@Work email&sid=`. Still by hand: in the form's settings, under Redirect on completion, type @ at the end of the link and pick Submission ID. Until the deploy, a submission on this form reaches the old code on the live site.
-2. One test submission with a +alias; check the parser against the real payload (labels and the employees dropdown).
-3. `node scripts/setup-airtable.js` to add the new columns (industry_reported, country_reported, employees_reported, in_their_words, lead_source, requested_slot, booked_slot, slot_changed, picked_at, buyer_tz, booking_lock).
-4. Add `LLM_PROVIDER=gemini` to Vercel (the Gemini key and model are already there), and `AE_TZ` if the AE is not on US Eastern time.
-5. Deploy, then run one live lead through `/book`.
+- `node --test`: 196 tests pass.
+- `node scripts/replay.js`: 15 of 15 sample leads match. Also `--no-pick` (15-minute fallback) and `--busy` (picked time taken meanwhile).
 
 ## Known gaps and judgement calls
 
-- **Footer on `/book`:** none, by decision. No disclaimer on the page or on the new Tally form.
+- **No footer or disclaimer** on `/book`, `/demo` or the Tally form, by decision.
 - **Weekend-looking tabs:** slots are AE weekdays, but a visitor far from US Eastern can see one under a Saturday tab, because times are shown in their zone.
-- **15-minute fallback without a scheduler:** the app asks itself to run again later, in hops of up to 4 minutes. Tested with mocks only.
 - **Booking race:** scoring and the pick finishing in the same instant is guarded by a mark-and-recheck on the Airtable row, not a true lock.
 - **Person data:** LinkedIn and title only (Exa). Time in role and previous companies stay unknown without a paid Apollo plan.
 - **Google sign-in** expires 7 days after 7 Oct 2026 while the OAuth app is in Testing mode.
 - **Emails name the product;** the forms and Slack alerts do not. The brief names the customer stories.
+- **Airtable:** `first_choice`, `backup_choice`, `time_zone`, `website` and the default "Table 1" are left over from the old form and can be deleted by hand (the API cannot delete columns).
 
 ## Where things are
 
-- Rules, lists, weights, team, templates: `rules.json`
-- Spec: `BUILD_SPEC.md` (does not yet describe the new form flow; this file does)
+- Rules, lists, weights, team, templates, form options: `rules.json`
+- Spec: `BUILD_SPEC.md` is the original spec and does not describe the new form flow, CRM history or the signal changes; this file does.
+- Form setup: `node scripts/setup-tally.js pblqzy` (re-syncs the form from `rules.json`)
 - Booking page preview: `node scripts/dev-server.js`
-- Screenshots: `screenshots/` (the phone-width ones show the page in the left 390px of the image)
+- Screenshots: `screenshots/` (taken before the footer was removed)
