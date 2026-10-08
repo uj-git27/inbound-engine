@@ -105,13 +105,18 @@ test('sender display name, reply-to and BCC are right for every template', () =>
 test('template content: sourced line only when there is one; vendor email has no tour link', () => {
   const lead = { name: 'Dana Reyes', email: 'dana@acme.com' };
   const booking = { buyerLocal: 'Tue, Oct 20, 7:00 AM PDT' };
-  const withSignal = buildEmail('tier_a_confirm', { lead, booking, env: {}, outcome: { signals: [{ type: 'funding', date: '2026-09-01' }], pricing: { model: 'usage' } } });
+  // Tier A goes out automatically, so it is generic: no signal, no discovery questions.
+  const auto = buildEmail('tier_a_confirm', { lead, booking, env: {}, outcome: { signals: [{ type: 'funding', date: '2026-09-01' }], pricing: { model: 'usage' } } });
+  assert.equal(/Congrats|usage data/.test(auto.text), false);
+  assert.match(auto.text, /Here is what we'll cover on the call:\n1\. How you bill today/);
+  assert.match(auto.text, /calendar invite has already been sent/);
+  const withSignal = buildEmail('tier_b_confirm', { lead, booking, env: {}, outcome: { signals: [{ type: 'funding', date: '2026-09-01' }], pricing: { model: 'usage' } } });
   assert.equal(withSignal.subject, 'Your Zenskar demo on Tue, Oct 20, 7:00 AM PDT');
   assert.match(withSignal.text, /Congrats on the funding round announced 2026-09-01\./);
   assert.match(withSignal.text, /1\. How do you get usage data into an invoice today/);
   assert.ok(withSignal.text.includes(rules.emails.productTourUrl));
   assert.match(withSignal.text, /calendar invite has already been sent/);
-  const without = buildEmail('tier_a_confirm', { lead, booking, env: {}, outcome: { signals: [{ type: 'ipo_prep', date: '2026-09-01' }] } });
+  const without = buildEmail('tier_b_confirm', { lead, booking, env: {}, outcome: { signals: [{ type: 'ipo_prep', date: '2026-09-01' }] } });
   assert.equal(/Congrats/.test(without.text), false);
   assert.equal(/\n\n\n/.test(without.text), false, 'no empty gap where the line would have been');
   assert.equal(buildEmail('reject_vendor', { lead, env: {} }).text.includes(rules.emails.productTourUrl), false);

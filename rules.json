@@ -748,8 +748,7 @@
           "Hi {first_name},",
           "Thanks for booking a demo with us. You're confirmed for {meeting_time}.",
           "{slot_change_line}",
-          "{signal_line}",
-          "Here are the 3 things we'll cover:\n{topics}",
+          "Here is what we'll cover on the call:\n1. How you bill today and where it takes the most effort.\n2. A walkthrough of {brand} around that.\n3. Your questions, and what a sensible next step would look like.",
           "Optional pre-reading, if you'd like a head start, is our product tour: {tour_url}",
           "The calendar invite has already been sent to this address.",
           "{sender_name}"
