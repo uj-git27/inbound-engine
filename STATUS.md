@@ -2,19 +2,19 @@
 
 Last updated: 8 Oct 2026. Concept built on public data.
 
-## Two versions exist right now
+## What is live
 
-| | Live on Vercel | In the repo, NOT deployed |
-|---|---|---|
-| Form | Old Tally form: name, work email, job title, company name, preferred date and time, time zone | New Tally step 1 (to be built by Utsav) plus our own slot page at `/book` |
-| Booking | Booked from the slot typed on the form | Booked when the lead is qualified AND has picked a time on `/book`, whichever comes second |
-| Commit | `4388cc9` | `172f55a` and later |
+The new form flow is deployed (8 Oct 2026): Tally step 1 at https://tally.so/r/pblqzy, then our slot page at `/book`. The old form (https://tally.so/r/J9NYgR) no longer matches the parser and should not be used.
 
-Do not deploy the repo version until the new Tally form exists and one real test submission has been checked against the parser. Deploying it now would break the old form: its fields no longer match.
+## CRM history
+
+Every card about a company the CRM knows (Tier A/B/C brief, customer, open deal, closed lost, expansion with the parent's history) carries up to 3 lines: touches, deal status, latest note. Template only, no AI. Read from HubSpot (emails, calls, meetings, notes, deals), saved for 60 minutes, and "CRM history unavailable" if the read fails. Seed: `node scripts/seed-history.js` (TEST records for Initech, Northwind, Globex, Acme, Salesforce).
+
+Open: the HubSpot key still cannot READ emails (403; it needs `sales-email-read`), so accounts with emails (Initech, Northwind) show "CRM history unavailable" until that scope works.
 
 ## What works (tests, DRY_RUN)
 
-- `node --test`: 184 tests pass.
+- `node --test`: 194 tests pass.
 - `node scripts/replay.js`: 15 of 15 sample leads match. Also `--no-pick` (15-minute fallback) and `--busy` (picked time taken meanwhile).
 - Core flow: webhook > free checks > CRM lookup > family check > company profile > gates > signals > score > tier > alert in Slack > Airtable log > CRM save.
 

@@ -57,7 +57,12 @@ test('closed lost: goes back to the old deal owner with the history, no scoring 
   assert.equal(posts.length, 1);
   assert.equal(posts[0].channel, 'ae-alerts');
   assert.match(posts[0].text, /^For: Alex Morgan\n\*Returning account: previously closed lost\*/);
-  assert.match(posts[0].text, /deal "TEST: Initech \(lost\)" was closed lost, lost reason "Pricing", last touch 2026-06-15/);
+  assert.ok(posts[0].text.includes([
+    '*CRM history:*',
+    '   3 touches since 2026-03-12. Last: email by Alex Morgan, 2026-08-20 (no reply).',
+    '   "TEST: Initech (lost)" Closed lost, Pricing, 2026-06-15.',
+    '   "TEST: Liked the product, budget too tight this year. Revisit in Q4." (note, 2026-06-15, Alex Morgan)',
+  ].join('\n')));
   assert.match(posts[0].text, /Confirm meeting>/);
   assert.equal(/Right tier|Wrong:/.test(posts[0].text), false);
   assert.equal(row.status, 'routed_closed_lost');

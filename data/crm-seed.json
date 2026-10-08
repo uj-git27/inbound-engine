@@ -10,14 +10,21 @@
     "name": "TEST: Globex",
     "lifecyclestage": "opportunity",
     "owner_role": "ae",
-    "deal": { "name": "TEST: Globex new business", "stage": "presentationscheduled" }
+    "deal": {
+      "name": "TEST: Globex new business",
+      "stage": "presentationscheduled"
+    }
   },
   {
     "domain": "initech-test.com",
     "name": "TEST: Initech",
     "lifecyclestage": "lead",
     "owner_role": "ae",
-    "deal": { "name": "TEST: Initech (lost)", "stage": "closedlost", "lost_reason": "Pricing" },
+    "deal": {
+      "name": "TEST: Initech (lost)",
+      "stage": "closedlost",
+      "lost_reason": "Pricing"
+    },
     "last_touch": "2026-06-15",
     "headcount": 450,
     "country": "United States",
@@ -38,5 +45,17 @@
     "name": "TEST: pretend customer",
     "lifecyclestage": "customer",
     "owner_role": "csm"
+  },
+  {
+    "domain": "northwind-test.com",
+    "name": "TEST: Northwind",
+    "lifecyclestage": "lead",
+    "owner_role": "sdr",
+    "headcount": 600,
+    "country": "United States",
+    "industry": "software",
+    "hubspot_industry": "COMPUTER_SOFTWARE",
+    "funding_stage": "Series B",
+    "fresh": true
   }
 ]

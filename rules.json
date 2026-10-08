@@ -177,7 +177,8 @@
     "jainutsav67+initech@gmail.com": "initech-test.com",
     "jainutsav67+sub@gmail.com": "slack.com",
     "jainutsav67+child@gmail.com": "acme-labs-test.com",
-    "jainutsav67+newrelic@gmail.com": "newrelic.com"
+    "jainutsav67+newrelic@gmail.com": "newrelic.com",
+    "jainutsav67+northwind@gmail.com": "northwind-test.com"
   },
   "disqualify": {
     "personal_email_domains": [
@@ -840,5 +841,10 @@
   "review_override_actions": [
     "send_sdr",
     "confirm_anyway"
-  ]
+  ],
+  "history": {
+    "label": "CRM history",
+    "note_chars": 140,
+    "cache_minutes": 60
+  }
 }

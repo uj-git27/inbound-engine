@@ -24,7 +24,7 @@ test('rules: scoring adds up to 100 and tiers match the spec', () => {
 
 test('rules: demo aliases map to the 6 spec domains, plus the ones added for the demo', () => {
   assert.deepEqual(Object.values(rules.demo_aliases), [
-    'temporal.io', 'launchdarkly.com', 'acme-test.com', 'globex-test.com', 'initech-test.com', 'slack.com', 'acme-labs-test.com', 'newrelic.com',
+    'temporal.io', 'launchdarkly.com', 'acme-test.com', 'globex-test.com', 'initech-test.com', 'slack.com', 'acme-labs-test.com', 'newrelic.com', 'northwind-test.com',
   ]);
 });
 
@@ -34,7 +34,7 @@ test('schema: Leads, Cache and CRM tables with unique field names', () => {
 });
 
 test('seed: the TEST records, owned by real team roles', () => {
-  assert.deepEqual(seed.map((r) => r.domain), ['acme-test.com', 'globex-test.com', 'initech-test.com', 'acme-labs-test.com', 'salesforce.com']);
+  assert.deepEqual(seed.map((r) => r.domain), ['acme-test.com', 'globex-test.com', 'initech-test.com', 'acme-labs-test.com', 'salesforce.com', 'northwind-test.com']);
   for (const r of seed) assert.ok(rules.team[r.owner_role]);
 });
 

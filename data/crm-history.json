@@ -1,0 +1,39 @@
+{
+  "initech-test.com": {
+    "deal": { "closed_at": "2026-06-15" },
+    "items": [
+      { "type": "meeting", "date": "2026-03-12", "title": "TEST: Demo", "status": "COMPLETED", "owner_role": "ae" },
+      { "type": "email", "date": "2026-05-04", "title": "TEST: Proposal sent", "owner_role": "ae" },
+      { "type": "note", "date": "2026-06-15", "body": "TEST: Liked the product, budget too tight this year. Revisit in Q4.", "owner_role": "ae" },
+      { "type": "email", "date": "2026-08-20", "title": "TEST: Checking in", "owner_role": "ae" }
+    ]
+  },
+  "northwind-test.com": {
+    "items": [
+      { "type": "email", "date": "2026-07-08", "title": "TEST: Cold sequence, email 1", "status": "OPENED", "owner_role": "sdr" },
+      { "type": "email", "date": "2026-07-15", "title": "TEST: Cold sequence, email 2", "status": "OPENED", "owner_role": "sdr" },
+      { "type": "email", "date": "2026-07-22", "title": "TEST: Cold sequence, email 3", "status": "OPENED", "owner_role": "sdr" },
+      { "type": "note", "date": "2026-07-23", "body": "TEST: Cold sequence finished, no response.", "owner_role": "sdr" }
+    ]
+  },
+  "globex-test.com": {
+    "deal": { "entered_stage_at": "2026-10-03" },
+    "items": [
+      { "type": "call", "date": "2026-09-24", "title": "TEST: Discovery call", "status": "COMPLETED", "owner_role": "ae" },
+      { "type": "meeting", "date": "2026-10-03", "title": "TEST: Demo", "status": "COMPLETED", "owner_role": "ae" },
+      { "type": "note", "date": "2026-10-03", "body": "TEST: Strong fit. Waiting on CFO sign-off.", "owner_role": "ae" }
+    ]
+  },
+  "acme-test.com": {
+    "items": [
+      { "type": "meeting", "date": "2026-08-18", "title": "TEST: Quarterly review", "status": "COMPLETED", "owner_role": "csm" },
+      { "type": "note", "date": "2026-08-18", "body": "TEST: Renewal 30 Nov. Asked about a usage-billing add-on.", "owner_role": "csm" }
+    ]
+  },
+  "salesforce.com": {
+    "items": [
+      { "type": "meeting", "date": "2026-09-16", "title": "TEST: Quarterly review", "status": "COMPLETED", "owner_role": "ae" },
+      { "type": "note", "date": "2026-09-16", "body": "TEST: Wants to roll out to subsidiaries next year.", "owner_role": "ae" }
+    ]
+  }
+}
