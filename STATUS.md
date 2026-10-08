@@ -70,7 +70,7 @@ Every card about a company carries up to 3 lines: touches, deal status, latest n
 - **No footer or disclaimer** on `/book`, `/demo` or the Tally form, by decision.
 - **Weekend-looking tabs:** slots are AE weekdays, but a visitor far from US Eastern can see one under a Saturday tab, because times are shown in their zone.
 - **Booking race:** scoring and the pick finishing in the same instant is guarded by a mark-and-recheck on the Airtable row, not a true lock.
-- **Person data:** LinkedIn and title only (Exa). Time in role and previous companies stay unknown without a paid Apollo plan.
+- **Person data:** Exa finds the LinkedIn profile and title; Blitz (`BLITZ_API_KEY`) then reads that profile for the role start date and earlier employers. A role started in the last 6 months is marked "recently joined" on the card (`person_recent_months`).
 - **Google sign-in** expires 7 days after 7 Oct 2026 while the OAuth app is in Testing mode.
 - **Emails name the product;** the forms and Slack alerts do not. The brief names the customer stories.
 - **Airtable:** `first_choice`, `backup_choice`, `time_zone`, `website`, `drafts` and the default "Table 1" are not used by the engine and can be deleted by hand (the API cannot delete columns).

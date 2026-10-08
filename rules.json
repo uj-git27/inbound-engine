@@ -612,6 +612,7 @@
     "expiry_hours": 24
   },
   "phone_lookup": false,
+  "person_recent_months": 6,
   "limits": {
     "external_call_timeout_ms": 20000,
     "webhook_write_timeout_ms": 8000,
