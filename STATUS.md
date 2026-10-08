@@ -40,7 +40,7 @@ Every card about a company carries up to 3 lines: touches, deal status, latest n
 
 - **HubSpot email read is 403.** The service key needs `sales-email-read` (or `crm.objects.emails.read`). Until then accounts with emails (Initech, Northwind) show "CRM history unavailable", and the history seed cannot be re-run.
 - **15-minute fallback not proven live.** Two live tests failed to book by themselves. Likely cause: the last delayed call was cut off after 10 seconds, before the booking finished. A fix is deployed (`api/sweep.js` now answers at once and works afterwards) but has not been re-tested live.
-- **`/demo` in a real browser not confirmed.** Whether the picker appears in place, or Tally's redirect sends the visitor to `/book`, needs one manual test. If it redirects, remove the redirect in `scripts/setup-tally.js`.
+- **`/demo` time picker in place not confirmed.** With the Tally redirect on, the visitor was taken to a separate `/book` page. The redirect is now removed, so the page should swap the form for the time picker itself; this needs one manual test.
 - **Timers on a schedule:** Vercel's free plan runs them once a day; they also run on every new lead. The GitHub job in `scripts/github-sweep-workflow.yml` is written but not enabled.
 
 ## Proven on the live site

@@ -1,4 +1,4 @@
-// Creates the step 1 Tally form, its webhook to BASE_URL/api/lead and the redirect to /book.
+// Creates the step 1 Tally form and its webhook to BASE_URL/api/lead.
 //   node scripts/setup-tally.js              creates a NEW form (the old live form is not touched)
 //   node scripts/setup-tally.js <form id>    re-syncs that form's questions and settings from rules.json
 // Needs TALLY_API_KEY, TALLY_SIGNING_SECRET and BASE_URL in .env. The secret is never printed.
@@ -45,19 +45,10 @@ const blocks = [
   question(labels.help), input('TEXTAREA', needs('help')),
 ];
 
-// The form is shown inside our own page (/demo), which swaps in the time picker after submit.
-// Someone who opens the Tally link directly is sent to the time picker page instead, with their
-// email and the submission ID. The shape of that ID mention is copied from Tally's own editor.
+// The form is shown inside our own page (/demo), which swaps in the time picker when Tally
+// reports the submission. There is no redirect: it would move the visitor off that page.
 const base = need('BASE_URL').replace(/\/$/, '');
-const mail = { uuid: randomUUID(), name: labels.email };
-const sid = { uuid: randomUUID(), name: 'Submission ID' };
-const span = (m) => `<span class="mention" data-uuid="${m.uuid}">@${m.name}</span>`;
-const settings = {
-  redirectOnCompletion: {
-    html: `${base}/book?e=${span(mail)}&sid=${span(sid)}`,
-    mentions: [{ uuid: sid.uuid, field: { uuid: 'id', type: 'METADATA', questionType: 'FORM_TITLE', blockGroupUuid: 'id', title: 'id' } }, { uuid: mail.uuid, field: { uuid: email.groupUuid, type: 'INPUT_FIELD', questionType: 'INPUT_EMAIL', blockGroupUuid: email.groupUuid, title: mail.name } }],
-  },
-};
+const settings = { redirectOnCompletion: null };
 
 const formId = process.argv[2];
 let form;
