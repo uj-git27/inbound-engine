@@ -29,7 +29,7 @@ Last updated: 8 Oct 2026 (commit after `b6cbbf0`). Concept built on public data.
 - **Summary:** Gemini writes 2 to 3 lines from those signals only (`LLM_PROVIDER=gemini`). If it fails or adds a number that is not in the signals, a template line is used.
 - **Size rejections** (headcount out of range) still get the 12-month research and summary on their card. Other rejections get no research.
 - **Parent and subsidiary:** checked before the gates, from HubSpot links, then Apollo, then a web search (Exa). A parent or subsidiary that is a customer or has an open deal makes the lead an "Expansion" card for that account's owner.
-- **Role-played demo leads:** any `jainutsav67+<something>@gmail.com`. The company is researched for real and duplicate and rate limits do not apply. The card carries no DEMO tag, and the person typed on the form is enriched like any lead: LinkedIn and role, then the phone (FullEnrich, paid) for Tier A and B.
+- **Role-played demo leads:** any `jainutsav67+<something>@gmail.com`. The company is researched for real and duplicate and rate limits do not apply. The card carries no DEMO tag, and the person typed on the form is enriched like any lead: LinkedIn and role. The paid phone lookup (FullEnrich) is switched off for everyone: `phone_lookup` in `rules.json`.
 - **Tier B at short notice:** a meeting booked less than 4 hours ahead is not auto-released by the "unconfirmed 4 hours before" rule.
 
 ## CRM history

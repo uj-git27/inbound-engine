@@ -24,6 +24,7 @@ beforeEach(() => {
   resetMocks();
 });
 afterEach(() => {
+  rules.phone_lookup = false;
   process.env = { ...saved };
 });
 
@@ -163,6 +164,7 @@ test('a meeting booked later by a person also reaches the CRM record', async () 
 });
 
 test('contact details found later are added to the CRM contact without losing the earlier ones', async () => {
+  rules.phone_lookup = true;
   const c = getConnectors();
   c.fullenrich.findPhone = async () => '+1 415 555 0199';
   await runSample(sample('03'), c);

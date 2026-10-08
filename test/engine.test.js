@@ -32,6 +32,7 @@ beforeEach(() => {
   resetMocks();
 });
 afterEach(() => {
+  rules.phone_lookup = false;
   process.env = { ...saved };
 });
 
@@ -146,6 +147,7 @@ test('Tier A: brief in #ae-alerts for Alex Morgan; booked and confirmed once the
 });
 
 test('Tier B: hold on the AE calendar with "| SDR to take", brief in #sdr-inbound, no email', async () => {
+  rules.phone_lookup = true; // the paid phone lookup, when rules.json switches it on
   const c = getConnectors();
   await runSample(sample('03'), c);
   assert.equal(c.google.events[0].summary, `${rules.booking.title} | SDR to take`);
@@ -194,7 +196,7 @@ test('DEMO_MODE: the invite and every email go to DEMO_INBOX; aliases are enrich
   const { got } = await runSample(sample('01'), c);
   assert.deepEqual(c.google.events[0].attendees, [{ email: 'demo@inbox.example' }]);
   assert.equal(got.calls.includes('apollo_person'), true, 'the name typed on the form is looked up');
-  assert.match(row(c, '01').fields.paid_calls_detail, /fullenrich_phone/, 'and so is the phone');
+  assert.equal(/fullenrich_phone/.test(row(c, '01').fields.paid_calls_detail), false, 'the paid phone lookup is off in rules.json');
   assert.equal(c.slack.posts.length, 4, 'the brief, the contact follow-up, the booking note and the intro draft');
   assert.equal(c.clay.rows.length, 0);
   assert.deepEqual(c.google.emails.map((e) => [e.to, e.bcc]), [['demo@inbox.example', null]]);

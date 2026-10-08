@@ -611,6 +611,7 @@
   "links": {
     "expiry_hours": 24
   },
+  "phone_lookup": false,
   "limits": {
     "external_call_timeout_ms": 20000,
     "webhook_write_timeout_ms": 8000,
