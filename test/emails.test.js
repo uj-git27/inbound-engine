@@ -187,7 +187,20 @@ test('a slam-dunk rejection is never nurtured: its email already went out', asyn
 test('Tier B: reminder 24 hours before, automatic release 4 hours before', async () => {
   const c = getConnectors();
   await runSample(sample('03'), c);
-  const start = Date.parse(JSON.parse(row(c, sample('03')).fields.state_json).booking.start);
+  const record = row(c, sample('03'));
+  const state = JSON.parse(record.fields.state_json);
+  const start = Date.parse(state.booking.start);
+  const bookedAt = (hoursBefore) => {
+    state.booking.bookedAt = new Date(start - hoursBefore * HOUR).toISOString();
+    return c.airtable.updateRecord(rules.tables.leads, record.id, { state_json: JSON.stringify(state) });
+  };
+  // Booked at short notice (inside the 4-hour window): the timers leave the meeting alone.
+  await bookedAt(3);
+  assert.deepEqual(await sweep({ connectors: c, now: start - 2 * HOUR }), { booked: 0, reminders: 0, released: 0, nurtured: 0, errors: [] });
+  assert.equal(c.google.events.length, 1);
+
+  // Booked well ahead: reminder, then release.
+  await bookedAt(48);
   assert.deepEqual(await sweep({ connectors: c, now: start - 30 * HOUR }), { booked: 0, reminders: 0, released: 0, nurtured: 0, errors: [] });
 
   assert.equal((await sweep({ connectors: c, now: start - 23 * HOUR })).reminders, 1);

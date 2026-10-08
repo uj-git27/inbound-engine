@@ -25,5 +25,12 @@ export async function GET(request) {
     })());
     return Response.json({ ok: true, waiting_ms: wait });
   }
+  // A delayed run that has reached its time: the caller is a hand-over that only waits 10 seconds,
+  // and a run that books a meeting takes longer. So it answers at once and does the work after.
+  if (at) {
+    runInBackground(sweep({ connectors: getConnectors() })
+      .then((result) => console.log('sweep (delayed):', JSON.stringify(result)), (err) => console.error('sweep (delayed) failed:', err.message)));
+    return Response.json({ ok: true, started: true });
+  }
   return Response.json({ ok: true, ...(await sweep({ connectors: getConnectors() })) });
 }

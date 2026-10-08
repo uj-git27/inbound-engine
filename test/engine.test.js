@@ -125,7 +125,8 @@ test('Tier A: brief in #ae-alerts for Alex Morgan; booked and confirmed once the
   assert.match(alert.text, /\*In their words:\* "We bill on usage and month-end invoicing takes a week\."/);
   assert.match(alert.text, /source: Apollo/);
   assert.match(alert.text, /\$50 per million Actions/);
-  assert.match(alert.text, /Not booked yet: waiting for the lead to pick a time/);
+  assert.match(alert.text, /\nBooked: .* · invite sent/, 'once booked, the card itself says so');
+  assert.equal(alert.edited, true);
   assert.equal(/Actions:/.test(alert.text), false, 'Tier A has no SDR step and no approval step');
   assert.match(alert.text, /Right tier>.*Wrong: .*\|A> \/ .*\|B> \/ .*\|C>/);
 
@@ -151,7 +152,7 @@ test('Tier B: hold on the AE calendar with "| SDR to take", brief in #sdr-inboun
   assert.equal(alert.channel, 'sdr-inbound');
   assert.match(alert.text, /^For: Sam Patel\n/);
   assert.match(alert.text, /Confirm meeting>.*Not qualified>/);
-  assert.match(alert.text, /\*Phone:\* pending/);
+  assert.match(alert.text, /\nBooked: .* · invite sent/);
   assert.match(contact.text, /Contact lookup finished/);
   assert.equal(booked.thread_ts, alert.ts);
   assert.match(booked.text, /^Booked for Sam Patel to take: /);
@@ -185,13 +186,15 @@ test('"In their words" is quoted, escaped and never acted on', async () => {
   assert.ok(quoted.replace(/&lt;|&gt;/g, '<').length <= 300, 'at most 300 characters');
 });
 
-test('DEMO_MODE: the invite and every email go to DEMO_INBOX; aliases skip the person and phone lookups', async () => {
+test('DEMO_MODE: the invite and every email go to DEMO_INBOX; aliases get the person lookup but never the phone lookup', async () => {
   process.env.DEMO_MODE = 'true';
   process.env.DEMO_INBOX = 'demo@inbox.example';
   const c = getConnectors();
   const { got } = await runSample(sample('01'), c);
   assert.deepEqual(c.google.events[0].attendees, [{ email: 'demo@inbox.example' }]);
-  assert.equal(got.calls.includes('apollo_person'), false);
+  assert.equal(got.calls.includes('apollo_person'), true, 'the name typed on the form is looked up');
+  assert.equal(got.calls.includes('fullenrich_phone'), false);
+  assert.match(c.slack.posts[0].text, /\*Phone:\* not looked up \(demo lead\)/);
   assert.equal(c.slack.posts.length, 3, 'the brief, the booking note and the intro draft; no contact follow-up');
   assert.equal(c.clay.rows.length, 0);
   assert.deepEqual(c.google.emails.map((e) => [e.to, e.bcc]), [['demo@inbox.example', null]]);

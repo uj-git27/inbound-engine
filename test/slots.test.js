@@ -306,15 +306,16 @@ test('7. headcount fallback: with no enrichment, the range typed on the form dri
   assert.match(c.slack.posts.find((p) => /quietharbor-systems/.test(p.text)).text, /201-500 staff \(self-reported on the form\)/);
 });
 
-test('7b. enrichment wins when it has a headcount', () => {
+test('7b. the form wins over enrichment for headcount', () => {
   const apollo = profileFromApollo({ name: 'X', estimated_num_employees: 40, owned_by_organization_id: null });
   const { profile, flag } = applySelfReported(apollo, '201-500');
-  assert.deepEqual([profile.headcount_min, profile.headcount_max, profile.headcount_source], [40, 40, undefined]);
-  assert.match(gate(profile).reason, /Headcount 40 is outside/, 'the looked-up number is used, not the form');
+  assert.deepEqual([profile.headcount_min, profile.headcount_max, profile.headcount_source], [201, 500, 'self-reported']);
+  assert.equal(gate(profile), null, 'the range on the form is used, not the looked-up number');
+  assert.match(gate(applySelfReported(apollo, null).profile).reason, /Headcount 40 is outside/, 'with no answer on the form, the looked-up number is used');
   assert.ok(flag);
 });
 
-test('8. headcount mismatch flag: more than one band apart flags for review and never disqualifies', async () => {
+test('8. headcount mismatch flag: more than one band apart flags for review and does not disqualify by itself', async () => {
   const at = (n) => profileFromApollo({ name: 'X', estimated_num_employees: n, owned_by_organization_id: null });
   assert.equal(applySelfReported(at(530), '501-1,000').flag, null, 'same band');
   assert.equal(applySelfReported(at(530), '201-500').flag, null, 'one band apart');
@@ -323,13 +324,13 @@ test('8. headcount mismatch flag: more than one band apart flags for review and 
   assert.equal(applySelfReported(at(530), '5,001+').flag, 'headcount mismatch (form says 5,001+, Apollo says 530)');
 
   const c = getConnectors();
-  const lead = { ...sample('01'), id: 'mismatch', employees: '11-50', expect: { outcome: 'A', channel: 'ae-alerts' } };
+  const lead = { ...sample('01'), id: 'mismatch', employees: '51-200', expect: { outcome: 'A', channel: 'ae-alerts' } };
   const { problems, got } = await runSample(lead, c);
   assert.deepEqual(problems, [], 'still Tier A and still booked: the flag is for review only');
-  assert.deepEqual(got.flags, ['headcount mismatch (form says 11-50, Apollo says 530)']);
-  assert.match(c.slack.posts[0].text, /\*Flags:\* headcount mismatch \(form says 11-50, Apollo says 530\)/);
+  assert.deepEqual(got.flags, ['headcount mismatch (form says 51-200, Apollo says 530)']);
+  assert.match(c.slack.posts[0].text, /\*Flags:\* headcount mismatch \(form says 51-200, Apollo says 530\)/);
   const fields = [...c.airtable.tables.get(rules.tables.leads).values()].at(-1).fields;
-  assert.equal(fields.flags, 'headcount mismatch (form says 11-50, Apollo says 530)');
+  assert.equal(fields.flags, 'headcount mismatch (form says 51-200, Apollo says 530)');
   assert.ok(fields.booked_slot);
 });
 

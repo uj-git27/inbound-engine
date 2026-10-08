@@ -113,7 +113,7 @@ test('a disqualified lead marked "Wrong: A" is rescued to the AE', async () => {
   const post = c.slack.posts.at(-2);
   assert.equal(post.channel, 'ae-alerts');
   assert.match(post.text, /^For: Alex Morgan\n\*Not scored \(the engine disqualified it: headcount out of range\)\* · now handled as Tier A\n/);
-  assert.match(post.text, /\*Why this tier:\* not scored\. The engine's reason: Headcount 40 is outside 200 to 2000/);
+  assert.match(post.text, /\*Why this tier:\* not scored\. The engine's reason: Headcount 11-50 is outside 200 to 2000/);
   assert.equal(c.google.events.length, 1);
   assert.deepEqual(sent(c), ['tier_a_confirm']);
 });

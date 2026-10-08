@@ -25,11 +25,13 @@ test('form: industry and country come from their dropdowns; "Other" stays unknow
   assert.deepEqual([none.industry, none.country], [null, null]);
 });
 
-test('form answers fill only what enrichment left unknown, and are labelled', () => {
+test('form answers are the ones used, over enrichment, and are labelled', () => {
   const filled = applySelfReported(empty, null, { industry: 'Fintech / Payments', country: 'Canada' }).profile;
   assert.deepEqual([filled.industry, filled.industry_source, filled.country, filled.country_source], ['Fintech / Payments', 'self-reported', 'Canada', 'self-reported']);
   const kept = applySelfReported({ ...empty, industry: 'software', country: 'United States', source: 'Apollo' }, null, { industry: 'Healthcare', country: 'India' }).profile;
-  assert.deepEqual([kept.industry, kept.country, kept.industry_source], ['software', 'United States', undefined]);
+  assert.deepEqual([kept.industry, kept.country, kept.industry_source], ['Healthcare', 'India', 'self-reported']);
+  const blank = applySelfReported({ ...empty, industry: 'software', country: 'United States', source: 'Apollo' }, null, {}).profile;
+  assert.deepEqual([blank.industry, blank.country, blank.industry_source], ['software', 'United States', undefined], 'no answer on the form: enrichment is used');
 });
 
 test('form answers drive the gates when enrichment has nothing', () => {
