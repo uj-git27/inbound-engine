@@ -72,6 +72,10 @@ const page = () => `<!doctype html>
     .day { flex: 1; }
     .slots { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
   }
+  /* Shown next to the form on /demo: always light, like the form, and no gap above. */
+  :root[data-embed] { --bg: #ffffff; --card: #ffffff; --ink: #14171f; --muted: #5b6474; --line: #dfe3ea; --accent: #2f5bea; --accent-ink: #ffffff; --soft: #eef2fd; --ok: #1f7a4d; }
+  :root[data-embed] main { padding: 8px 8px 0; }
+  :root[data-embed] .card { padding: 20px 16px; }
 </style>
 </head>
 <body>
@@ -91,6 +95,7 @@ const page = () => `<!doctype html>
         <p class="picked" id="picked"><span>Your pick</span>None yet</p>
         <button class="confirm" id="confirm" type="button" disabled>Confirm</button>
       </div>
+      <p class="zone" id="hint" hidden></p>
       <p class="error" id="error" role="alert" hidden></p>
     </section>
 
@@ -117,6 +122,15 @@ const page = () => `<!doctype html>
   var full = fmt({ weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
   var zoneName = (fmt({ timeZoneName: 'long' }).formatToParts(new Date()).find(function (p) { return p.type === 'timeZoneName'; }) || {}).value || zone;
   var days = [], chosenDay = 0, chosen = null;
+  // On /demo the picker sits next to the form from the start: there is no submission yet, so a
+  // time is chosen first and booked when the page tells us the form was submitted.
+  var early = params.get('pre') === '1' && !sid;
+  if (window.top !== window) document.documentElement.setAttribute('data-embed', '');
+  function hint() {
+    if (!early) return;
+    $('hint').textContent = chosen ? 'Submit the form to book this time.' : 'Pick a time, then submit the form.';
+    $('hint').hidden = false;
+  }
 
   function finish(title, text, plain) {
     $('doneTitle').textContent = title;
@@ -143,6 +157,7 @@ const page = () => `<!doctype html>
         $('picked').appendChild(document.createTextNode(full.format(new Date(iso))));
         $('confirm').disabled = false;
         $('error').hidden = true;
+        hint();
         renderSlots();
       };
       box.appendChild(b);
@@ -202,7 +217,7 @@ const page = () => `<!doctype html>
   }
 
   $('confirm').onclick = function () {
-    if (!chosen) return;
+    if (!chosen || !sid) return;
     var button = this;
     button.disabled = true;
     button.textContent = 'Confirming…';
@@ -229,6 +244,25 @@ const page = () => `<!doctype html>
       });
   };
 
+  if (early) {
+    $('confirm').hidden = true;
+    hint();
+    fetch('/api/slots?open=1').then(function (r) { return r.json(); }).then(handle)
+      .catch(function () { finish('Something went wrong', 'Please refresh the page to try again.', true); });
+    // The page around us says the form was submitted: book the chosen time, or ask for one.
+    window.addEventListener('message', function (event) {
+      var data = event.data;
+      if (event.origin !== location.origin || !data || data.type !== 'form-submitted' || !data.sid || sid) return;
+      sid = String(data.sid);
+      email = String(data.email || '');
+      early = false;
+      $('hint').hidden = true;
+      $('confirm').hidden = false;
+      if (chosen) return $('confirm').onclick();
+      load(0);
+    });
+    return;
+  }
   if (!sid) return finish('This link is incomplete', 'Please go back to the form and submit it again.', true);
   load(0);
 })();
