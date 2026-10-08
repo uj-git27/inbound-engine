@@ -14,7 +14,7 @@ Do not deploy the repo version until the new Tally form exists and one real test
 
 ## What works (tests, DRY_RUN)
 
-- `node --test`: 175 tests pass.
+- `node --test`: 184 tests pass.
 - `node scripts/replay.js`: 15 of 15 sample leads match. Also `--no-pick` (15-minute fallback) and `--busy` (picked time taken meanwhile).
 - Core flow: webhook > free checks > CRM lookup > family check > company profile > gates > signals > score > tier > alert in Slack > Airtable log > CRM save.
 
@@ -38,7 +38,7 @@ Do not deploy the repo version until the new Tally form exists and one real test
 
 ## The new form flow (in the repo)
 
-1. Tally step 1 fields: First name, Last name, Work email, Number of employees (dropdown), Job title, How can we help? (optional), How did you hear about us? (optional).
+1. Tally step 1 fields: First name, Last name, Work email, Job title, Country (dropdown), Industry (dropdown), Number of employees (dropdown), How can we help? (optional), How did you hear about us? (optional).
 2. Tally redirects to `/book?sid=@SubmissionID&e=@WorkEmail`.
 3. `/book` calls `GET /api/slots?sid=`. A slam-dunk reject sees "Thanks, we'll be in touch by email." and no calendar. If the form has not reached us yet, the page retries every second for 5 seconds, then shows times anyway.
 4. Slots: next 5 weekdays, 30 minutes, 9:00 to 17:00 in the AE's time zone (`AE_TZ`, default America/New_York), at least 2 hours out, minus anything busy on the calendar. Shown in the visitor's own time zone.
@@ -51,12 +51,16 @@ Parser rules: the join key is the Tally submission ID; the domain comes from the
 
 Headcount: enrichment wins. With no enrichment, the range typed on the form drives the 200 to 2,000 gate. If both exist and are more than one band apart, the lead is flagged "headcount mismatch" for review; it is never disqualified for that.
 
+Industry and country from the form work like headcount: enrichment wins, the form fills what enrichment left unknown (and then drives the gates and the fit score), and the brief marks it "self-reported on the form". "Other" stays unknown.
+
+Signals: only business growth or decline counts (funding, new finance leader, IPO, M&A, revenue, expansion, partnership, layoffs, decline). Product or feature releases are not signals. Partnership, layoffs and decline are shown but not scored. The 12-month window is strict: asked of the search, checked on every article date, and checked again on saved results; an article with no date is dropped. The brief opens the signals with a 2 to 3 line summary written by Gemini from those signals only (`LLM_PROVIDER=gemini`); if Gemini fails or adds a number that is not in the signals, a template line is used.
+
 ## Before deploying the new flow
 
 1. Done through the API (`node scripts/setup-tally.js`): new form https://tally.so/r/pblqzy with the webhook to `/api/lead` and a redirect to `/book?e=@Work email&sid=`. Still by hand: in the form's settings, under Redirect on completion, type @ at the end of the link and pick Submission ID. Until the deploy, a submission on this form reaches the old code on the live site.
 2. One test submission with a +alias; check the parser against the real payload (labels and the employees dropdown).
-3. `node scripts/setup-airtable.js` to add the new columns (employees_reported, in_their_words, lead_source, requested_slot, booked_slot, slot_changed, picked_at, buyer_tz, booking_lock).
-4. Add `AE_TZ` to Vercel if the AE is not on US Eastern time.
+3. `node scripts/setup-airtable.js` to add the new columns (industry_reported, country_reported, employees_reported, in_their_words, lead_source, requested_slot, booked_slot, slot_changed, picked_at, buyer_tz, booking_lock).
+4. Add `LLM_PROVIDER=gemini` to Vercel (the Gemini key and model are already there), and `AE_TZ` if the AE is not on US Eastern time.
 5. Deploy, then run one live lead through `/book`.
 
 ## Known gaps and judgement calls

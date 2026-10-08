@@ -8,11 +8,12 @@ import { rules } from '../lib/rules.js';
 
 const saved = { ...process.env };
 
-async function submit({ email, name }) {
+async function submit({ email, name, blank = [] }) {
   const payload = structuredClone(fixture);
   const set = (label, value) => { payload.data.fields.find((f) => f.label === label).value = value; };
   if (email) set('Work email', email);
   if (name) set('First name', name);
+  for (const label of blank) set(label, null);
   payload.data.submissionId = `sub-${email}`;
   await POST(new Request('http://localhost/api/lead', { method: 'POST', body: JSON.stringify(payload) }));
   await background.last;
@@ -65,7 +66,7 @@ test('closed lost: goes back to the old deal owner with the history, no scoring 
 });
 
 test('unknown company: Tier C in #inbound-review plus a low-confidence post, not tagged DEMO', async () => {
-  const { row, posts } = await submit({ email: 'dana@unknown-co.com', company: 'Unknown Co' });
+  const { row, posts } = await submit({ email: 'dana@unknown-co.com', company: 'Unknown Co', blank: ['Industry', 'Country'] });
   assert.deepEqual(posts.map((p) => p.channel), ['inbound-review', 'inbound-review']);
   assert.match(posts[0].text, /^For: Jordan Lee\n\*Tier C/);
   assert.match(posts[1].text, /Low confidence/);

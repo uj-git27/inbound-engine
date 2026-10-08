@@ -23,28 +23,31 @@ const dropdown = (options, isRequired) => {
 };
 
 const { labels, title, required, employee_bands: bands } = rules.form;
-const needs = (key) => required.includes(key);
+const needs = (key) => required.includes(key) || rules.form.ask_required.includes(key);
 const email = input('INPUT_EMAIL', needs('email'));
 const blocks = [
   block('FORM_TITLE', 'TEXT', { title, html: title }),
   question(labels.first_name), input('INPUT_TEXT', needs('first_name')),
   question(labels.last_name), input('INPUT_TEXT', needs('last_name')),
   question(labels.email), email,
-  question(labels.employees), ...dropdown(bands.map((b) => b.label), needs('employees')),
   question(labels.title), input('INPUT_TEXT', needs('title')),
+  question(labels.country), ...dropdown(rules.form.countries, needs('country')),
+  question(labels.industry), ...dropdown(rules.form.industries, needs('industry')),
+  question(labels.employees), ...dropdown(bands.map((b) => b.label), needs('employees')),
   question(labels.help), input('TEXTAREA', needs('help')),
   question(labels.lead_source), input('INPUT_TEXT', needs('lead_source')),
 ];
 
-// After submit, Tally sends the visitor to our slot page with their email. Tally's API has no documented
-// way to mention the submission ID, so that one part is added by hand in the form's settings:
-// Settings > Redirect on completion > put the cursor at the end of the link, type @ and pick "Submission ID".
+// After submit, Tally sends the visitor to our slot page with their email and the submission ID.
+// The shape of the submission ID mention is copied from what Tally's own editor saves.
 const base = need('BASE_URL').replace(/\/$/, '');
 const mail = { uuid: randomUUID(), name: labels.email };
+const sid = { uuid: randomUUID(), name: 'Submission ID' };
+const span = (m) => `<span class="mention" data-uuid="${m.uuid}">@${m.name}</span>`;
 const settings = {
   redirectOnCompletion: {
-    html: `${base}/book?e=<span class="mention" data-uuid="${mail.uuid}">@${mail.name}</span>&sid=`,
-    mentions: [{ uuid: mail.uuid, field: { uuid: email.groupUuid, type: 'INPUT_FIELD', questionType: 'INPUT_EMAIL', blockGroupUuid: email.groupUuid, title: mail.name } }],
+    html: `${base}/book?e=${span(mail)}&sid=${span(sid)}`,
+    mentions: [{ uuid: sid.uuid, field: { uuid: 'id', type: 'METADATA', questionType: 'FORM_TITLE', blockGroupUuid: 'id', title: 'id' } }, { uuid: mail.uuid, field: { uuid: email.groupUuid, type: 'INPUT_FIELD', questionType: 'INPUT_EMAIL', blockGroupUuid: email.groupUuid, title: mail.name } }],
   },
 };
 

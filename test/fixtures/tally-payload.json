@@ -22,6 +22,8 @@
         ]
       },
       { "key": "q5", "label": "Job title", "type": "INPUT_TEXT", "value": "CFO" },
+      { "key": "q8", "label": "Country", "type": "DROPDOWN", "value": ["cty_1"], "options": [{ "id": "cty_1", "text": "United States" }, { "id": "cty_2", "text": "Canada" }] },
+      { "key": "q9", "label": "Industry", "type": "DROPDOWN", "value": ["ind_2"], "options": [{ "id": "ind_1", "text": "Software / SaaS" }, { "id": "ind_2", "text": "Fintech / Payments" }] },
       { "key": "q6", "label": "How can we help?", "type": "TEXTAREA", "value": "Our invoicing for usage is manual." },
       { "key": "q7", "label": "How did you hear about us?", "type": "INPUT_TEXT", "value": "A colleague" }
     ]

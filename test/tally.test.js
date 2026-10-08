@@ -28,6 +28,8 @@ test('parse: fields are found by label, the dropdown ID resolves through its opt
     domain: 'temporal.io',
     company: null,
     employees: '501-1,000',
+    industry: 'Fintech / Payments',
+    country: 'United States',
     help: 'Our invoicing for usage is manual.',
     lead_source: 'A colleague',
   });
