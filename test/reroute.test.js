@@ -36,7 +36,11 @@ test('tier and disqualified alerts carry the verdict buttons', async () => {
   const c = getConnectors();
   await runSample(sample('04'), c);
   await runSample(sample('12'), c);
-  for (const post of c.slack.posts) assert.deepEqual(buttons(post).slice(-4), ['Right tier', 'Wrong: A', 'Wrong: B', 'Wrong: C']);
+  // A card never offers "Wrong" for the tier it is already in: Tier C drops C, a rejection keeps all three.
+  for (const post of c.slack.posts) {
+    const inC = post.text.split('\n')[1].startsWith('*Tier C');
+    assert.deepEqual(buttons(post).slice(inC ? -3 : -4), inC ? ['Right tier', 'Wrong: A', 'Wrong: B'] : ['Right tier', 'Wrong: A', 'Wrong: B', 'Wrong: C']);
+  }
 });
 
 test('Tier C marked "Wrong: A" goes to the AE: booked, confirmation sent, brief in #ae-alerts', async () => {
@@ -96,7 +100,7 @@ test('Tier A marked "Wrong: C" goes to review; nurture there cancels the meeting
   const post = c.slack.posts.at(-1);
   assert.equal(post.channel, 'inbound-review');
   assert.match(post.text, /A meeting is still booked for .*: "Nurture" or "Approve rejection" cancels it/);
-  assert.deepEqual(buttons(post), ['Send to SDR', 'Nurture', 'Approve rejection', 'Find contact']);
+  assert.deepEqual(buttons(post), ['Nurture', 'Send to SDR', 'Approve rejection', 'Find contact']);
   assert.equal(c.google.events.length, 1);
   const result = await act(c, '01', 'nurture');
   assert.match(result.message, /The meeting on .* was cancelled\.$/);

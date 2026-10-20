@@ -172,7 +172,7 @@ test('Tier C and disqualified leads are never booked, even after picking a time'
   assert.equal(tierC.got.page, 'received');
   assert.ok(row(c, '04').fields.requested_slot, 'the pick is kept in case a person moves the lead up');
   assert.equal(student.got.page, 'rejected', 'a slam-dunk reject is offered no times at all');
-  assert.match(c.slack.posts[0].text, /Send to SDR>.*Nurture>.*Approve rejection>.*Find contact>/);
+  assert.match(c.slack.posts[0].text, /Nurture>.*Send to SDR>.*Approve rejection>.*Find contact>/);
   assert.match(c.slack.posts[1].text, /^For: Jordan Lee\n\*Disqualified: personal email\*/);
   assert.match(c.slack.posts[1].text, /No email goes out until you act/);
   assert.match(c.slack.posts[1].text, /Approve rejection>.*Nurture>.*Confirm meeting anyway>/);

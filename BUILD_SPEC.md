@@ -188,7 +188,8 @@ Every alert starts with "For: <name>".
 
 ### Step 6: Tier
 - **A** is 60 or above, **B** is 40 to 59, **C** is below 40.
-- A lead with 3 or more unknown facts (headcount, country, industry, funding, person) also gets a low-confidence post in the review channel. Its booking still goes ahead.
+- A lead with 3 or more unknown facts (headcount, country, industry, funding, person) is marked low confidence. A Tier A or B lead also gets a low-confidence post in the review channel, and its booking still goes ahead. A Tier C card carries the same warning as one "Thin data" line and no second post.
+- **The Tier C card** (the reviewer's call, 20 Oct 2026) is short: the heading with "your call", who, why Tier C (the score parts), the company, the thin-data line if any, what the buttons do, and the 4-hour default. Nurture is the first (green) button. The full brief goes to the SDR with "Send to SDR".
 
 ### Step 7: Brief
 - **Template only for now** (change of 7 Oct 2026), filled from the sourced facts, for every tier and for the pre-demo email. An LLM writer can plug in later behind `LLM_PROVIDER`; the template stays the fallback if it fails.

@@ -70,11 +70,12 @@ test('closed lost: goes back to the old deal owner with the history, no scoring 
   assert.equal(row.tier, '');
 });
 
-test('unknown company: Tier C in #inbound-review plus a low-confidence post, not tagged DEMO', async () => {
+test('unknown company: one Tier C card in #inbound-review with a thin-data line, not tagged DEMO', async () => {
   const { row, posts } = await submit({ email: 'dana@unknown-co.com', company: 'Unknown Co', blank: ['Industry', 'Country'] });
-  assert.deepEqual(posts.map((p) => p.channel), ['inbound-review', 'inbound-review']);
+  assert.deepEqual(posts.map((p) => p.channel), ['inbound-review']);
   assert.match(posts[0].text, /^For: Jordan Lee\n\*Tier C/);
-  assert.match(posts[1].text, /Low confidence/);
+  assert.match(posts[0].text, /:warning: Thin data: .*unknown/);
+  assert.equal(/Low confidence|booking still goes ahead/.test(posts[0].text), false);
   assert.equal(row.demo, false);
   assert.equal(row.status, 'tier_c');
   assert.equal(row.flags, 'low confidence');
