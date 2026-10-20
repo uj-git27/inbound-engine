@@ -174,7 +174,9 @@ test('Tier C and disqualified leads are never booked, even after picking a time'
   assert.equal(student.got.page, 'rejected', 'a slam-dunk reject is offered no times at all');
   assert.match(c.slack.posts[0].text, /Send to SDR>.*Nurture>.*Approve rejection>.*Find contact>/);
   assert.match(c.slack.posts[1].text, /^For: Jordan Lee\n\*Disqualified: personal email\*/);
-  assert.match(c.slack.posts[1].text, /The "reject_personal_email" email was sent automatically/);
+  assert.match(c.slack.posts[1].text, /No email goes out until you act/);
+  assert.match(c.slack.posts[1].text, /Approve rejection>.*Nurture>.*Confirm meeting anyway>/);
+  assert.equal(c.google.emails.length, 0, 'a rejection is never emailed before a person acts');
 });
 
 test('"In their words" is quoted, escaped and never acted on', async () => {
@@ -327,9 +329,11 @@ test('Tier C: "Nurture" tags the CRM and sends nurture_tour; "Approve rejection"
   assert.deepEqual(c.google.emails.map((e) => [e.template, e.fromName]), [['nurture_tour', 'Utsav (Acme concept demo)'], ['reject_generic', 'Utsav (Acme concept demo)']]);
 });
 
-test('slam-dunk rejection: the email goes out by itself; "confirm anyway" still books', async () => {
+test('slam-dunk rejection: no email until a person acts; "approve rejection" sends it, "confirm anyway" books', async () => {
   const c = getConnectors();
   await runSample(sample('06'), c);
+  assert.deepEqual(sent(c), []);
+  assert.equal((await act(c, '06', 'approve_rejection')).ok, true);
   assert.deepEqual(sent(c), ['reject_generic']);
   assert.ok(c.google.emails[0].text.includes(rules.emails.productTourUrl));
   await act(c, '06', 'confirm_anyway');

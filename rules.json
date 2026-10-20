@@ -733,7 +733,7 @@
       "international_expansion": "expansion",
       "new_finance_leader": "new finance leadership appointment"
     },
-    "auto_rejections": {
+    "rejection_templates": {
       "personal_email": "reject_personal_email",
       "generic": "reject_generic",
       "vendor": "reject_vendor",

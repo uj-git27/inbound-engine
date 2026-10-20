@@ -41,16 +41,16 @@ const cases = [
   ['Tier A', sample('01'), ['tier_a_confirm']],
   ['Tier B (nothing until "Confirm meeting")', sample('03'), []],
   ['Tier C (nothing until the reviewer acts)', sample('04'), []],
-  ['personal email', sample('05'), ['reject_personal_email']],
-  ['throwaway email', custom('throwaway', { email: 'x@mailinator.com' }, DQ), ['reject_personal_email']],
-  ['competitor employee', sample('06'), ['reject_generic']],
-  ['student', custom('student', { title: 'Student' }, DQ), ['reject_generic']],
-  ['fake name, real address', custom('fake', { name: 'asdf asdf' }, DQ), ['reject_generic']],
+  ['personal email (nothing until the reviewer acts)', sample('05'), []],
+  ['throwaway email', custom('throwaway', { email: 'x@mailinator.com' }, DQ), []],
+  ['competitor employee', sample('06'), []],
+  ['student', custom('student', { title: 'Student' }, DQ), []],
+  ['fake name, real address', custom('fake', { name: 'asdf asdf' }, DQ), []],
   ['fake data with an address that cannot receive mail', sample('07'), []],
-  ['recruiter', custom('recruiter', { title: 'Technical Recruiter' }, DQ), ['reject_vendor']],
-  ['consultant', custom('consultant', { title: 'Billing Consultant' }, DQ), ['reject_vendor']],
-  ['investor', custom('investor', { title: 'Investor' }, DQ), ['not_a_buyer']],
-  ['press', custom('press', { title: 'Reporter' }, DQ), ['not_a_buyer']],
+  ['recruiter', custom('recruiter', { title: 'Technical Recruiter' }, DQ), []],
+  ['consultant', custom('consultant', { title: 'Billing Consultant' }, DQ), []],
+  ['investor', custom('investor', { title: 'Investor' }, DQ), []],
+  ['press', custom('press', { title: 'Reporter' }, DQ), []],
   ['rejection based on looked-up data (too small)', sample('12'), []],
   ['rejection based on looked-up data (region)', sample('13'), []],
   ['existing customer', sample('08'), []],
@@ -73,7 +73,21 @@ test('a duplicate within 30 days gets no email', async () => {
   const dup = { ...sample('03'), id: 'dup' };
   await runSample(sample('03'), c);
   await runSample({ ...dup, expect: { outcome: 'duplicate', channel: 'revops-engine' } }, c);
-  assert.deepEqual(sent(c), ['reject_personal_email']);
+  assert.deepEqual(sent(c), []);
+});
+
+test('"Approve rejection" sends the template that fits why the lead was rejected', async () => {
+  const c = getConnectors();
+  const ids = [
+    [sample('05'), 'reject_personal_email'], // personal email
+    [custom('recruiter', { title: 'Technical Recruiter' }, DQ), 'reject_vendor'],
+    [custom('investor', { title: 'Investor' }, DQ), 'not_a_buyer'],
+    [custom('student', { title: 'Student' }, DQ), 'reject_generic'],
+  ];
+  for (const [lead] of ids) await runSample(lead, c);
+  assert.deepEqual(sent(c), [], 'nothing goes out before a person acts');
+  for (const [lead] of ids) assert.equal((await runAction({ leadId: leadIdOf(lead), action: 'approve_rejection', connectors: c })).ok, true);
+  assert.deepEqual(sent(c), ids.map(([, template]) => template));
 });
 
 // ---------- sender, reply-to, BCC, footer ----------
@@ -149,10 +163,11 @@ test('no template is ever sent twice to the same lead', async () => {
   await runAction({ leadId: id, action: 'nurture', connectors: c });
   // A later timer run must not send it again either.
   await sweep({ connectors: c, now: Date.now() + 10 * HOUR });
-  // Nor a rejection that reuses a template already sent on arrival.
+  // Nor a rejection approved twice.
   await runSample(sample('06'), c);
+  await runAction({ leadId: leadIdOf(sample('06')), action: 'approve_rejection', connectors: c });
   const second = await runAction({ leadId: leadIdOf(sample('06')), action: 'approve_rejection', connectors: c });
-  assert.match(second.message, /No email was sent: "reject_generic" was already sent to this lead/);
+  assert.match(second.message, /"Approve rejection" was already done. Nothing was repeated/);
   assert.deepEqual(sent(c), ['nurture_tour', 'reject_generic']);
 });
 
@@ -182,11 +197,13 @@ test('a rejection based on looked-up data also defaults to nurture after 4 hours
   assert.deepEqual(c.google.emails.map((e) => [e.template, e.intendedFor]), [['nurture_tour', 'sam@tinyco-labs.com']]);
 });
 
-test('a slam-dunk rejection is never nurtured: its email already went out', async () => {
+test('a rejection from the free checks also defaults to nurture after 4 hours, and not before', async () => {
   const c = getConnectors();
   await runSample(sample('05'), c);
-  assert.equal((await sweep({ connectors: c, now: Date.now() + 6 * HOUR })).nurtured, 0);
-  assert.deepEqual(sent(c), ['reject_personal_email']);
+  assert.equal((await sweep({ connectors: c, now: Date.now() + 3 * HOUR })).nurtured, 0);
+  assert.deepEqual(sent(c), []);
+  assert.equal((await sweep({ connectors: c, now: Date.now() + 5 * HOUR })).nurtured, 1);
+  assert.deepEqual(sent(c), ['nurture_tour']);
 });
 
 test('Tier B: reminder 24 hours before, automatic release 4 hours before', async () => {

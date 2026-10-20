@@ -249,14 +249,15 @@ Every alert starts with "For: <name>".
   - "Confirm meeting" sends `tier_b_confirm` from the AE and posts "Confirmed by {SDR}" in #ae-alerts.
   - "Not qualified" cancels the event and sends `tier_b_release`.
   - Not confirmed 24 hours before the meeting: reminder in #sdr-inbound. Still not confirmed 4 hours before: `tier_b_release` is sent, the event is cancelled, and #sdr-inbound is told.
-- **Slam-dunk rejections** (based only on what the lead typed) send automatically:
-  - personal or throwaway email → `reject_personal_email`
-  - competitor, student or job seeker, fake data → `reject_generic`
-  - agency, recruiter, consultant, vendor → `reject_vendor`
-  - investor or press → `not_a_buyer`
-  - duplicate within 30 days → no email
-- **Tier C, and rejections based on looked-up data** (headcount, region, B2B): no email until Jordan Lee acts in #inbound-review.
-  - "Approve rejection" sends `reject_generic`. "Send to SDR" sends and books nothing. "Nurture" sends `nurture_tour`.
+- **Every rejection waits for a person.** Nothing is emailed automatically. The card goes to #inbound-review with "Approve rejection", "Nurture" and "Confirm meeting anyway".
+  - "Approve rejection" sends the template that fits why the lead was rejected (`emails.rejection_templates` in rules.json):
+    - personal or throwaway email → `reject_personal_email`
+    - agency, recruiter, consultant, vendor → `reject_vendor`
+    - investor or press → `not_a_buyer`
+    - competitor, student or job seeker, fake data, and anything based on looked-up data → `reject_generic`
+  - duplicate within 30 days → no email, no card to act on
+- **Tier C, and every rejection** (free checks or looked-up data such as headcount, region, B2B): no email until Jordan Lee acts in #inbound-review.
+  - "Approve rejection" sends the rejection above. "Send to SDR" sends and books nothing (Tier C only). "Nurture" sends `nurture_tour`.
   - Untouched for 4 hours: defaults to "Nurture".
 - **Timers** run from `/api/sweep`: on every new lead, once a day from Vercel's scheduler, and hourly if the GitHub workflow in `scripts/github-sweep-workflow.yml` is enabled.
 - **Slack actions** are buttons with a confirm step when `SLACK_SIGNING_SECRET` is set (handled by `/api/slack-actions`); otherwise they are signed links.

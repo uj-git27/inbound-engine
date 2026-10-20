@@ -28,7 +28,7 @@ Nothing lands on the AE's calendar until the lead qualifies. Every alert names i
 | Tier A (score 60+) | #ae-alerts, AE | Booked, confirmation emailed automatically |
 | Tier B (40 to 59) | #sdr-inbound, SDR | Held on the AE's calendar; SDR confirms or releases |
 | Tier C (below 40) | #inbound-review, reviewer | Not booked; reviewer sends to SDR, nurtures or rejects |
-| Disqualified | #inbound-review, reviewer | None. Slam-dunk rejections are emailed automatically |
+| Disqualified | #inbound-review, reviewer | None. No email until the reviewer acts; untouched for 4 hours it moves to nurture |
 | Existing customer | #cs-alerts, CSM | None |
 | Open deal | #ae-alerts, deal owner | None |
 | Closed lost | #ae-alerts, old deal owner, with the history | None |
@@ -111,7 +111,7 @@ Tally form ──signed webhook──▶ POST /api/lead ──▶ raw payload to
 ```bash
 npm install
 cp .env.example .env     # fill in the keys you have
-npm test                 # 201 tests, mock connectors
+npm test                 # 202 tests, mock connectors
 node scripts/replay.js   # 15 sample leads, expects 15 of 15 to match
 ```
 
@@ -176,8 +176,8 @@ STATUS.md       What is live, what was proven, and open problems
 
 Built and running on the live site, with a complete flow from form to booking.
 
-- 201 tests pass; all 15 sample leads match their expected outcome.
-- Proven live: signed submissions, Airtable log, routing to the right channel and owner for every outcome, a real end-to-end booking with a calendar event, company data, news, pricing and CRM history, and the automatic rejection email.
+- 202 tests pass; all 15 sample leads match their expected outcome.
+- Proven live: signed submissions, Airtable log, routing to the right channel and owner for every outcome, a real end-to-end booking with a calendar event, company data, news, pricing and CRM history. Rejection emails used to go out automatically; since 2026-10-20 none is sent until a reviewer approves it (tests only so far).
 - Not yet proven live: a person clicking a Slack button, re-routing through "Wrong: A / B / C", the Slack card edit to "Booked", the FullEnrich phone lookup (switched off), and the expansion card with the parent's history (tests only).
 - Open: the HubSpot email read returns 403 until the key has the `sales-email-read` scope; timers run once a day on Vercel's free plan (plus on every new lead), and the hourly GitHub workflow in `scripts/github-sweep-workflow.yml` is written but not enabled.
 

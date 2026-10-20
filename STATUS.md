@@ -50,7 +50,7 @@ Every card about a company carries up to 3 lines: touches, deal status, latest n
 - A real booking end to end: Cohere (picked on the slot page) and Northwind (booked by a manual run of the timed rules), each with a calendar event.
 - Company data from Apollo; web check, news and people search from Exa; pricing page from Firecrawl; one Gemini summary.
 - CRM history from HubSpot for Globex, Acme and Salesforce.
-- Automatic rejection email for a slam-dunk reject.
+- Rejection emails (sent on the earlier automatic rule; since 2026-10-20 none is sent until a reviewer clicks "Approve rejection", not yet re-proven live).
 
 ## Not proven live
 
