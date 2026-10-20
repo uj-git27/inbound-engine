@@ -321,6 +321,8 @@ test('Tier C reviewer actions: send to SDR sends and books nothing; the SDR can 
   assert.equal(c.google.events.length, 0);
   assert.equal(c.slack.posts.at(-1).channel, 'sdr-inbound');
   assert.match(c.slack.posts.at(-1).text, /follow up by email, LinkedIn or call/);
+  assert.match(c.slack.posts.at(-1).text, /Not booked yet: the SDR confirms first/);
+  assert.equal(/waiting for the lead to pick a time|15 minutes/.test(c.slack.posts.at(-1).text), false, 'a sent lead is never auto-booked, so the card must not say so');
   assert.equal((await act(c, '04', 'confirm_meeting')).ok, true);
   assert.equal(c.google.events.length, 1);
   assert.equal(row(c, '04').fields.booked_slot, row(c, '04').fields.requested_slot, 'the time the lead picked is the one booked');
