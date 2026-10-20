@@ -36,7 +36,7 @@ test('schema: Leads, Cache and CRM tables with unique field names', () => {
 });
 
 test('seed: the TEST records, owned by real team roles', () => {
-  assert.deepEqual(seed.map((r) => r.domain), ['acme-test.com', 'globex-test.com', 'initech-test.com', 'acme-labs-test.com', 'salesforce.com', 'northwind-test.com']);
+  assert.deepEqual(seed.map((r) => r.domain), ['acme-test.com', 'globex-test.com', 'initech-test.com', 'acme-labs-test.com', 'salesforce.com', 'northwind-test.com', 'hooli-test.com', 'vandelay-test.com']);
   for (const r of seed) assert.ok(rules.team[r.owner_role]);
 });
 

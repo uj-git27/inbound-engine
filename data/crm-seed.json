@@ -57,5 +57,29 @@
     "hubspot_industry": "COMPUTER_SOFTWARE",
     "funding_stage": "Series B",
     "fresh": true
+  },
+  {
+    "domain": "hooli-test.com",
+    "name": "TEST: Hooli",
+    "lifecyclestage": "lead",
+    "owner_role": "sdr",
+    "headcount": 400,
+    "country": "United States",
+    "industry": "software",
+    "hubspot_industry": "COMPUTER_SOFTWARE",
+    "funding_stage": "Series A",
+    "fresh": true
+  },
+  {
+    "domain": "vandelay-test.com",
+    "name": "TEST: Vandelay",
+    "lifecyclestage": "lead",
+    "owner_role": "sdr",
+    "headcount": 300,
+    "country": "United States",
+    "industry": "software",
+    "hubspot_industry": "COMPUTER_SOFTWARE",
+    "funding_stage": "Bootstrapped",
+    "fresh": true
   }
 ]
