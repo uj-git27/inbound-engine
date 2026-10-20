@@ -555,10 +555,10 @@
     "day_end": "17:00",
     "duration_minutes": 30,
     "min_lead_hours": 2,
-    "weekdays_ahead": 5,
+    "weekdays_ahead": 10,
     "no_pick_minutes": 15,
     "slot_taken_note": "Your requested time was taken, so we've booked {new_time}. Reply to move it.",
-    "title": "Zenskar concept demo by Utsav",
+    "title": "Acme concept demo by Utsav",
     "sdr_title_suffix": " | SDR to take",
     "buyer_timezones": {
       "ET": "America/New_York",
@@ -715,11 +715,11 @@
     }
   },
   "emails": {
-    "brand": "Zenskar",
-    "team_display_name": "Utsav (Zenskar concept demo)",
+    "brand": "Acme",
+    "team_display_name": "Utsav (Acme concept demo)",
     "team_reply_to": "jainutsav67@gmail.com",
-    "footer": "Concept demo by Utsav, built on public data. Not affiliated with Zenskar.",
-    "productTourUrl": "https://www.zenskar.com/product-tour",
+    "footer": "Concept demo by Utsav, built on public data.",
+    "productTourUrl": "https://acme.example/tour",
     "bcc_ae_on": [
       "tier_a_confirm",
       "ae_intro",

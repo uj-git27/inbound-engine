@@ -324,7 +324,7 @@ test('Tier C: "Nurture" tags the CRM and sends nurture_tour; "Approve rejection"
   assert.equal(c.crm.rows.get('brightpath-hr.com').nurture, true);
   await runSample(sample('15'), c);
   assert.equal((await act(c, '15', 'approve_rejection')).ok, true);
-  assert.deepEqual(c.google.emails.map((e) => [e.template, e.fromName]), [['nurture_tour', 'Utsav (Zenskar concept demo)'], ['reject_generic', 'Utsav (Zenskar concept demo)']]);
+  assert.deepEqual(c.google.emails.map((e) => [e.template, e.fromName]), [['nurture_tour', 'Utsav (Acme concept demo)'], ['reject_generic', 'Utsav (Acme concept demo)']]);
 });
 
 test('slam-dunk rejection: the email goes out by itself; "confirm anyway" still books', async () => {

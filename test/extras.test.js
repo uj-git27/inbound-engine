@@ -37,7 +37,7 @@ test('Tier A: the intro email is shown in the thread for review and is not sent 
   const [note, draft] = c.slack.posts.filter((p) => p.thread_ts);
   assert.equal(note.thread_ts, alert.ts);
   assert.equal(draft.thread_ts, alert.ts);
-  assert.match(draft.text, /^\*Optional intro email from Alex Morgan\* \(not sent; review it, then send it if you want to\):\n\*Subject:\* Introducing myself before our Zenskar demo\n> Hi Dana,/);
+  assert.match(draft.text, /^\*Optional intro email from Alex Morgan\* \(not sent; review it, then send it if you want to\):\n\*Subject:\* Introducing myself before our Acme demo\n> Hi Dana,/);
   assert.match(draft.text, /> I'm Alex Morgan, and I'll be running your demo on /);
   assert.match(draft.text, /> 1\. Start with how you bill today \(your pricing page mentions "\$50 per million Actions"\)\./);
   assert.ok(draft.text.includes(rules.emails.productTourUrl));

@@ -33,6 +33,16 @@ const page = () => `<!doctype html>
   .who { color: var(--muted); font-size: .85rem; margin-top: 4px; overflow-wrap: anywhere; }
   .days { display: flex; gap: 8px; margin: 18px -16px 0; padding: 0 16px 6px; overflow-x: auto; scrollbar-width: none; }
   .days::-webkit-scrollbar { display: none; }
+  .dayrow { position: relative; }
+  /* Arrows for the days off to either side (the scrollbar is hidden, so a mouse could not reach them); swiping works too. */
+  .nav {
+    display: grid; position: absolute; top: calc(50% - 3px); transform: translateY(-50%); z-index: 1; width: 34px; height: 34px; padding: 0;
+    border: 1px solid var(--line); border-radius: 50%; background: var(--card); color: var(--ink); font: inherit; font-size: 1.3rem; line-height: 1;
+    place-items: center; cursor: pointer; box-shadow: 0 1px 6px rgba(0, 0, 0, .18);
+  }
+  .nav:hover { border-color: var(--accent); }
+  .nav.prev { left: -12px; }
+  .nav.next { right: -12px; }
   .day {
     flex: 0 0 auto; min-width: 74px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 12px; background: transparent;
     color: var(--ink); font: inherit; text-align: center; cursor: pointer;
@@ -69,7 +79,7 @@ const page = () => `<!doctype html>
     .card { padding: 28px; }
     h1 { font-size: 1.6rem; }
     .days { margin: 22px 0 0; padding: 0 0 6px; }
-    .day { flex: 1; }
+    .day { flex: 1 0 calc((100% - 32px) / 5); }
     .slots { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
   }
   /* Shown next to the form on /demo: always light, like the form, and no gap above. */
@@ -87,7 +97,11 @@ const page = () => `<!doctype html>
       <h1>Pick a time for your demo</h1>
       <p class="sub">30 minutes, by video call.</p>
       <p class="who" id="who" hidden></p>
-      <div class="days" id="days" role="tablist" aria-label="Day"></div>
+      <div class="dayrow">
+        <button class="nav prev" id="prev" type="button" aria-label="Earlier days" hidden>&lsaquo;</button>
+        <div class="days" id="days" role="tablist" aria-label="Day"></div>
+        <button class="nav next" id="next" type="button" aria-label="Later days" hidden>&rsaquo;</button>
+      </div>
       <div class="slots" id="slots" role="group" aria-label="Time"></div>
       <p class="empty" id="empty" hidden>No times left on this day. Try another day.</p>
       <p class="zone" id="zone"></p>
@@ -166,6 +180,7 @@ const page = () => `<!doctype html>
 
   function renderDays() {
     var box = $('days');
+    var kept = box.scrollLeft;
     box.textContent = '';
     days.forEach(function (d, i) {
       var b = document.createElement('button');
@@ -180,7 +195,20 @@ const page = () => `<!doctype html>
       b.onclick = function () { chosenDay = i; renderDays(); renderSlots(); };
       box.appendChild(b);
     });
+    box.scrollLeft = kept;
+    updateNav();
   }
+
+  // The arrows show only while there are days off to that side; each press moves five days.
+  function updateNav() {
+    var box = $('days');
+    $('prev').hidden = box.scrollLeft <= 2;
+    $('next').hidden = box.scrollLeft + box.clientWidth >= box.scrollWidth - 2;
+  }
+  $('days').addEventListener('scroll', updateNav);
+  window.addEventListener('resize', updateNav);
+  $('prev').onclick = function () { $('days').scrollBy({ left: -($('days').clientWidth + 8), behavior: 'smooth' }); };
+  $('next').onclick = function () { $('days').scrollBy({ left: $('days').clientWidth + 8, behavior: 'smooth' }); };
 
   function showSlots(data) {
     var byDay = {};
@@ -195,6 +223,7 @@ const page = () => `<!doctype html>
     renderDays();
     renderSlots();
     show('picker');
+    updateNav();
   }
 
   function handle(data) {

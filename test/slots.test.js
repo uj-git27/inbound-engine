@@ -53,12 +53,12 @@ test('grid: daylight saving is handled when converting the AE time zone to UTC',
   assert.equal(new Date(zonedToUtc('2026-12-01', '10:00', 'America/New_York')).toISOString(), '2026-12-01T15:00:00.000Z');
 });
 
-test('grid: next 5 weekdays, 30-minute slots, 9:00 to 17:00 in the AE time zone, at least 2 hours out', () => {
+test('grid: next 10 weekdays, 30-minute slots, 9:00 to 17:00 in the AE time zone, at least 2 hours out', () => {
   const zone = 'America/New_York';
   const now = zonedToUtc('2026-10-19', '08:00', zone); // a Monday, 8am
   const grid = slotGrid(now, {});
   const days = [...new Set(grid.map((s) => zonedDate(s.start, zone)))];
-  assert.deepEqual(days, ['2026-10-19', '2026-10-20', '2026-10-21', '2026-10-22', '2026-10-23']);
+  assert.deepEqual(days, ['2026-10-19', '2026-10-20', '2026-10-21', '2026-10-22', '2026-10-23', '2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']);
   assert.equal(new Date(grid[0].start).toISOString(), new Date(zonedToUtc('2026-10-19', '10:00', zone)).toISOString(), 'first slot is 2 hours from now');
   const tuesday = grid.filter((s) => zonedDate(s.start, zone) === '2026-10-20');
   assert.equal(tuesday.length, 16, '9:00 to 16:30');
@@ -70,7 +70,7 @@ test('grid: next 5 weekdays, 30-minute slots, 9:00 to 17:00 in the AE time zone,
 test('grid: weekends are skipped, and AE_TZ moves the business hours', () => {
   const friday = zonedToUtc('2026-10-23', '18:00', 'America/New_York');
   const days = [...new Set(slotGrid(friday, {}).map((s) => zonedDate(s.start, 'America/New_York')))];
-  assert.deepEqual(days, ['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29'], 'Friday evening has no slots left; then Monday to Thursday');
+  assert.deepEqual(days, ['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30', '2026-11-02', '2026-11-03', '2026-11-04', '2026-11-05'], 'Friday evening has no slots left; then the next nine weekdays');
   const la = slotGrid(friday, { AE_TZ: 'America/Los_Angeles' });
   assert.equal(new Date(la.find((s) => zonedDate(s.start, 'America/Los_Angeles') === '2026-10-26').start).toISOString(), '2026-10-26T16:00:00.000Z', '9am Pacific');
 });
@@ -355,7 +355,7 @@ test('no free time at all: the lead is told nothing false, and the owner is warn
   const result = await sweep({ connectors: c, now: Date.now() + 16 * MIN });
   assert.equal(result.booked, 0);
   assert.equal(c.google.events.length, 0);
-  assert.ok(c.slack.posts.some((p) => /Could not book Dana Reyes: no free slot in the next 5 weekdays/.test(p.text)));
+  assert.ok(c.slack.posts.some((p) => /Could not book Dana Reyes: no free slot in the next 10 weekdays/.test(p.text)));
   assert.deepEqual(sent(c), [], 'no confirmation is sent for a meeting that does not exist');
 });
 
@@ -404,5 +404,5 @@ test('GET /api/slots?open=1: the open times without a submission; the picker tak
   assert.equal((await slotsApi(new Request('https://engine.example/api/slots'))).status, 400);
   const { GET: bookPage } = await import('../api/book.js');
   const html = await (await bookPage()).text();
-  for (const text of ["params.get('pre') === '1'", "'/api/slots?open=1'", "data.type !== 'form-submitted'", 'event.origin !== location.origin']) assert.ok(html.includes(text), `picker is missing: ${text}`);
+  for (const text of ["params.get('pre') === '1'", "'/api/slots?open=1'", "data.type !== 'form-submitted'", 'event.origin !== location.origin', 'id="prev"', 'id="next"', 'Earlier days', 'Later days', 'scrollBy(']) assert.ok(html.includes(text), `picker is missing: ${text}`);
 });
