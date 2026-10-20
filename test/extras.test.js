@@ -171,3 +171,18 @@ test('contact details found later are added to the CRM contact without losing th
   const contact = c.crm.contacts.get('sofia@northwind-freight.com');
   assert.deepEqual([contact.phone, contact.name, contact.tier], ['+1 415 555 0199', 'Sofia Marin', 'B']);
 });
+
+test('a made-up company (a -test.com demo domain) has no news, and no news search is paid for', async () => {
+  const { createResearch } = await import('../lib/research.js');
+  const { createCache } = await import('../lib/cache.js');
+  const { createMockAirtable } = await import('../lib/connectors/mock/airtable.js');
+  let searched = 0;
+  const exa = { async searchNews() { searched += 1; return { results: [] }; } };
+  const research = createResearch({ exa, cache: createCache(createMockAirtable()) });
+  const calls = [];
+  assert.deepEqual(await research.news('vandelay-test.com', 'Vandelay', { calls, notes: [] }), []);
+  assert.equal(searched, 0);
+  assert.deepEqual(calls, []);
+  await research.news('vandelay.com', 'Vandelay', { calls, notes: [] });
+  assert.equal(searched, 1, 'a real-looking domain is still searched');
+});

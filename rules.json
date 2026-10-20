@@ -381,6 +381,7 @@
   },
   "signals": {
     "window_months": 12,
+    "made_up_domain_suffix": "-test.com",
     "points": {
       "funding": 5,
       "new_finance_leader": 4,
