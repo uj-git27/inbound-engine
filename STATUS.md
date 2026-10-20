@@ -14,7 +14,7 @@ Last updated: 8 Oct 2026 (commit after `b6cbbf0`). Concept built on public data.
 1. Form fields: First name, Last name, Work email, Company name, Job title, Country, Industry, Number of employees (all required), How did you hear about us? (dropdown, optional), Anything specific you'd like to explore? (optional).
 2. Tally sends the submission to `POST /api/lead` (signed). The engine runs: free checks > CRM lookup > family check > company profile > gates > signals > score > tier > Slack card > Airtable log > CRM save.
 3. The time picker shows the open times straight away (`GET /api/slots?open=1`). On submit it waits up to 5 seconds for the form to reach us, then books. A slam-dunk reject sees "Thanks, we'll be in touch by email." instead. A visitor who submits without picking can still pick afterwards.
-4. Slots: next 5 weekdays, 30 minutes, 9:00 to 17:00 in the AE's time zone (`AE_TZ`, default America/New_York), at least 2 hours out, minus anything busy on the calendar. Shown in the visitor's own time zone.
+4. Slots: next 10 weekdays, 30 minutes, any time of day in the AE's time zone (`AE_TZ`, default Asia/Kolkata), at least 2 hours out, minus anything busy on the calendar. Shown in the visitor's own time zone.
 5. `POST /api/slot {sid, slot, tz}` stores the pick. Tier A: booked, "Invite on its way." Tier B: hold booked, "Our team will confirm shortly." Tier C and others: the pick is kept, nothing is booked.
 6. Booking happens when the lead is qualified AND has picked a time, whichever comes second. Free/busy is checked again at booking; if the time was taken, the next free one is booked and the invite and email say so.
 7. No pick within 15 minutes: Tier A and B get the next free slot.

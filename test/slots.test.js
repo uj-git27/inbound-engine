@@ -53,26 +53,26 @@ test('grid: daylight saving is handled when converting the AE time zone to UTC',
   assert.equal(new Date(zonedToUtc('2026-12-01', '10:00', 'America/New_York')).toISOString(), '2026-12-01T15:00:00.000Z');
 });
 
-test('grid: next 10 weekdays, 30-minute slots, 9:00 to 17:00 in the AE time zone, at least 2 hours out', () => {
-  const zone = 'America/New_York';
+test('grid: next 10 weekdays, 30-minute slots across the whole day in the AE time zone, at least 2 hours out', () => {
+  const zone = 'Asia/Kolkata';
   const now = zonedToUtc('2026-10-19', '08:00', zone); // a Monday, 8am
   const grid = slotGrid(now, {});
   const days = [...new Set(grid.map((s) => zonedDate(s.start, zone)))];
   assert.deepEqual(days, ['2026-10-19', '2026-10-20', '2026-10-21', '2026-10-22', '2026-10-23', '2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']);
   assert.equal(new Date(grid[0].start).toISOString(), new Date(zonedToUtc('2026-10-19', '10:00', zone)).toISOString(), 'first slot is 2 hours from now');
   const tuesday = grid.filter((s) => zonedDate(s.start, zone) === '2026-10-20');
-  assert.equal(tuesday.length, 16, '9:00 to 16:30');
-  assert.equal(tuesday[0].start, zonedToUtc('2026-10-20', '09:00', zone));
-  assert.equal(tuesday.at(-1).start, zonedToUtc('2026-10-20', '16:30', zone));
+  assert.equal(tuesday.length, 48, '00:00 to 23:30');
+  assert.equal(tuesday[0].start, zonedToUtc('2026-10-20', '00:00', zone));
+  assert.equal(tuesday.at(-1).start, zonedToUtc('2026-10-20', '23:30', zone));
   assert.ok(grid.every((s) => s.end - s.start === 30 * MIN));
 });
 
-test('grid: weekends are skipped, and AE_TZ moves the business hours', () => {
-  const friday = zonedToUtc('2026-10-23', '18:00', 'America/New_York');
-  const days = [...new Set(slotGrid(friday, {}).map((s) => zonedDate(s.start, 'America/New_York')))];
-  assert.deepEqual(days, ['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30', '2026-11-02', '2026-11-03', '2026-11-04', '2026-11-05'], 'Friday evening has no slots left; then the next nine weekdays');
+test('grid: weekends are skipped, and AE_TZ moves the day', () => {
+  const friday = zonedToUtc('2026-10-23', '23:00', 'Asia/Kolkata');
+  const days = [...new Set(slotGrid(friday, {}).map((s) => zonedDate(s.start, 'Asia/Kolkata')))];
+  assert.deepEqual(days, ['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30', '2026-11-02', '2026-11-03', '2026-11-04', '2026-11-05'], 'Friday night has no slots left; then the next nine weekdays');
   const la = slotGrid(friday, { AE_TZ: 'America/Los_Angeles' });
-  assert.equal(new Date(la.find((s) => zonedDate(s.start, 'America/Los_Angeles') === '2026-10-26').start).toISOString(), '2026-10-26T16:00:00.000Z', '9am Pacific');
+  assert.equal(new Date(la.find((s) => zonedDate(s.start, 'America/Los_Angeles') === '2026-10-26').start).toISOString(), '2026-10-26T07:00:00.000Z', 'midnight Pacific');
 });
 
 test('slots API: only free times are offered, as UTC', async () => {
@@ -86,7 +86,7 @@ test('slots API: only free times are offered, as UTC', async () => {
   assert.equal(body.status, 'ok');
   assert.deepEqual(body.slots.slice(0, 2), [all.slots[1], all.slots[3]]);
   assert.ok(body.slots.every((s) => /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:00\.000Z$/.test(s)));
-  assert.equal(body.zone, 'America/New_York');
+  assert.equal(body.zone, 'Asia/Kolkata');
   assert.equal((await slotsGet(new Request('http://x/api/slots'))).status, 400);
 });
 
@@ -363,8 +363,8 @@ test('book(): with nothing requested it takes the first free time', async () => 
   const c = getConnectors();
   const now = zonedToUtc('2026-10-19', '08:00', 'America/New_York');
   const booking = await book({ lead: { email: 'a@b.co' }, google: c.google, now, env: {} });
-  assert.equal(booking.start, new Date(zonedToUtc('2026-10-19', '10:00', 'America/New_York')).toISOString());
-  assert.equal(booking.slot, 'Mon, Oct 19, 10:00 AM EDT');
+  assert.equal(booking.start, new Date(now + 2 * 3_600_000).toISOString(), 'two hours from now, on a half hour');
+  assert.equal(booking.slot, 'Mon, Oct 19, 7:30 PM GMT+5:30');
   assert.deepEqual([booking.changed, booking.changeNote], [false, null]);
 });
 

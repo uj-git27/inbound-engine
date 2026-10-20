@@ -514,6 +514,6 @@ test('calendar feed: UTC, zoned and all-day events are busy; cancelled and "free
   assert.deepEqual(parseIcsBusy(feed), [
     { start: '2026-10-20T14:00:00.000Z', end: '2026-10-20T15:00:00.000Z' },
     { start: '2026-10-21T16:00:00.000Z', end: '2026-10-21T17:00:00.000Z' },
-    { start: '2026-10-22T04:00:00.000Z', end: '2026-10-23T04:00:00.000Z' },
+    { start: '2026-10-21T18:30:00.000Z', end: '2026-10-22T18:30:00.000Z' }, // the all-day event is the AE's whole day, in Asia/Kolkata
   ]);
 });

@@ -209,7 +209,7 @@ Every alert starts with "For: <name>".
 - **Booking rule:**
   - Check free/busy. Book the preferred slot if it's free, else the next free weekday slot (10am, 1pm or 4pm ET, within 10 business days).
   - A weekend, past or less-than-2-hours-away slot rolls forward.
-  - The invite is 30 minutes long, titled "Acme concept demo by Utsav" (buyer-facing emails and the invite use the placeholder name Acme; the form does not), with `sendUpdates=all`.
+  - The invite is 30 minutes long, titled "Acme concept demo" (buyer-facing emails and the invite use the placeholder name Acme; the form does not), with `sendUpdates=all`.
   - The description gives the buyer's local time, any slot change, and the disclaimer.
 - **Tier A:** book, post the brief to #ae-alerts "For: Alex Morgan", and draft a pre-demo email. It's sent through Gmail **only after** a signed "Approve email" click.
 - **Tier B:** book with "| SDR to take" in the title, and post the brief to #sdr-inbound "For: Sam Patel". Include a signed "Promote to AE" link that renames the event and posts to #ae-alerts.
