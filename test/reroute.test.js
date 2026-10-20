@@ -132,6 +132,25 @@ test('general alias: you+<company domain>@gmail.com stands in for that company',
   assert.equal(c.slack.posts[0].text.includes('DEMO'), false, 'an alias lead is not tagged on the card');
 });
 
+test('demo mode forgives a typo in your own demo address; off, it is exact', async () => {
+  const { aliasDomain } = await import('../lib/pipeline.js');
+  const typo = 'inutsav67+vandelay-test.com@gmail.co'; // missing the j and the m
+  assert.equal(aliasDomain(typo, {}), null, 'demo mode off: a typo is just another address');
+  const demo = { DEMO_MODE: 'true' };
+  assert.equal(aliasDomain(typo, demo), 'vandelay-test.com');
+  assert.equal(aliasDomain('jainutsav67+vandelay-test.com@gmail.co', demo), 'vandelay-test.com');
+  assert.equal(aliasDomain('jainutsav7+vandelay-test.com@gmail.com', demo), 'vandelay-test.com');
+  assert.equal(aliasDomain('jainutsav67+vandelay-test.com@gmail.com', demo), 'vandelay-test.com');
+  assert.equal(aliasDomain('john+x.com@gmail.com', demo), null, 'someone else stays someone else');
+  assert.equal(aliasDomain('jainutsav67+vandelay@gmail.co', demo), null, 'still needs a full domain');
+  assert.equal(aliasDomain('jainutsav67+vandelay-test.com@outlook.com', demo), null, 'another provider is not a typo');
+  process.env.DEMO_MODE = 'true';
+  const c = getConnectors();
+  const lead = { id: 'typo-alias', name: 'Sam Rowe', email: typo, title: 'Software Engineer', company: 'Vandelay', expect: { outcome: 'C', channel: 'inbound-review' } };
+  const { got } = await runSample(lead, c);
+  assert.notEqual(got.outcome, 'duplicate');
+});
+
 test('"Right tier" only records the verdict and moves nothing', async () => {
   const c = getConnectors();
   await runSample(sample('04'), c);

@@ -221,6 +221,15 @@ test('a subsidiary linked to a customer inside the CRM is an expansion lead with
   assert.match(c.slack.posts[0].text, /its parent TEST: Acme \(acme-test\.com\) is a customer/);
 });
 
+test('DEMO_MODE: the same address can be submitted again and again, and each is scored', async () => {
+  process.env.DEMO_MODE = 'true';
+  const c = getConnectors();
+  const first = await runSample(sample('03'), c);
+  const second = await runSample({ ...sample('03'), id: 'again' }, c);
+  assert.notEqual(first.got.outcome, 'duplicate');
+  assert.equal(second.got.outcome, first.got.outcome, 'the second run is scored like the first');
+});
+
 test('a duplicate is skipped but RevOps is told', async () => {
   const c = getConnectors();
   await runSample(sample('03'), c);
@@ -436,6 +445,18 @@ test('rate limit: the 4th request from one domain in an hour goes to RevOps with
   assert.equal(outcomes[3].booked_slot, null);
   // Each of the three booked leads holds a different time.
   assert.equal(new Set(outcomes.slice(0, 3).map((o) => o.booked_slot)).size, 3);
+});
+
+test('DEMO_MODE: the per-domain limit is off, so a demo can reuse one company as often as it needs', async () => {
+  process.env.DEMO_MODE = 'true';
+  const c = getConnectors();
+  const base = sample('03');
+  const outcomes = [];
+  for (let i = 0; i < 5; i += 1) {
+    const s = { ...base, id: `${base.id}-${i}`, email: `person${i}@northwind-freight.com`, expect: {} };
+    outcomes.push((await runSample(s, c)).got.outcome);
+  }
+  assert.equal(outcomes.includes('rate_limited'), false);
 });
 
 test('5 simultaneous weird submissions are all handled', async () => {
