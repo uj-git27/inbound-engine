@@ -88,10 +88,10 @@ test('person and story helpers', () => {
   });
   assert.deepEqual(person, { linkedin: 'https://linkedin.com/in/x', title: 'CFO', role_start: '2024-03', previous_companies: ['Stripe', 'Square'], source: 'Apollo' });
   assert.equal(personFromApollo(null), null);
-  assert.equal(customerStory({ industry: 'hospital & health care' }, { model: 'usage' }).story, 'Sardine');
-  assert.equal(customerStory({ industry: 'hospital & health care' }, { model: 'tiered' }).story, 'Thriva');
-  assert.equal(customerStory({ industry: 'logistics & supply chain' }, { model: 'contact_sales' }).story, 'Yembo');
-  assert.equal(customerStory({ industry: 'computer software' }, { model: 'tiered' }).story, 'Vertice');
+  assert.equal(customerStory({ industry: 'hospital & health care' }, { model: 'usage' }).story, 'Pied Piper');
+  assert.equal(customerStory({ industry: 'hospital & health care' }, { model: 'tiered' }).story, 'Tyrell');
+  assert.equal(customerStory({ industry: 'logistics & supply chain' }, { model: 'contact_sales' }).story, 'Planet Express');
+  assert.equal(customerStory({ industry: 'computer software' }, { model: 'tiered' }).story, 'Dunder Mifflin');
   assert.equal(showPhone('+1 (415) 555-1234', { DEMO_MODE: 'true' }), '•••• 1234');
   assert.equal(showPhone('+1 415 555 1234', {}), '+1 415 555 1234');
 });

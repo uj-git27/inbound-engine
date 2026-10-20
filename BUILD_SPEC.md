@@ -199,7 +199,7 @@ Every alert starts with "For: <name>".
   - **Company:** headcount, HQ, industry and funding, labelled with its source (CRM or Apollo)
   - **Why now:** dated links
   - **Likely billing pain:** in a finance leader's words, citing the pricing quote
-  - **Customer story:** a rules-based match to Sardine, Vertice, Thriva, Yembo or Pontera; usage-priced companies default to Sardine
+  - **Customer story:** a rules-based match to Pied Piper, Dunder Mifflin, Tyrell, Planet Express or Bluth; usage-priced companies default to Pied Piper
   - **History:** if known in the CRM
   - **3 discovery questions**
   - **Why this tier:** with the score breakdown
