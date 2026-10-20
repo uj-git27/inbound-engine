@@ -196,12 +196,18 @@ test('DEMO_MODE: the invite and every email go to DEMO_INBOX; aliases are enrich
   process.env.DEMO_INBOX = 'demo@inbox.example';
   const c = getConnectors();
   const { got } = await runSample(sample('01'), c);
-  assert.deepEqual(c.google.events[0].attendees, [{ email: 'demo@inbox.example' }]);
+  assert.deepEqual(c.google.events[0].attendees, [{ email: 'demo+temporal.io@inbox.example', displayName: 'Dana Reyes' }], 'the invite shows the prospect by name and still lands in DEMO_INBOX');
   assert.equal(got.calls.includes('apollo_person'), true, 'the name typed on the form is looked up');
   assert.equal(/fullenrich_phone/.test(row(c, '01').fields.paid_calls_detail), false, 'the paid phone lookup is off in rules.json');
   assert.equal(c.slack.posts.length, 4, 'the brief, the contact follow-up, the booking note and the intro draft');
   assert.equal(c.clay.rows.length, 0);
   assert.deepEqual(c.google.emails.map((e) => [e.to, e.bcc]), [['demo@inbox.example', null]]);
+});
+
+test('without DEMO_MODE the invite goes to the lead own address, with no display name', async () => {
+  const c = getConnectors();
+  await runSample(sample('01'), c);
+  assert.deepEqual(c.google.events[0].attendees, [{ email: 'jainutsav67+temporal@gmail.com' }]);
 });
 
 test('expansion still works on a rerun, when the company data now comes from the CRM', async () => {
